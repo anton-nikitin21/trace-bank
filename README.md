@@ -5,7 +5,7 @@
 [Публичное демо](https://trace-bank-demo.tenderfield7.chatgpt.site/demo.html) · [Главная](https://trace-bank-demo.tenderfield7.chatgpt.site/) · [Как работать командой](CONTRIBUTING.md)
 
 ## Быстрый запуск
-
+субо лох мне пох
 fdfdfd
 Нужны Python 3.10+ и Node.js 22+ для проверок. Сайт не требует установки npm-пакетов.
 

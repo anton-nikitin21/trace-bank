@@ -1,0 +1,18 @@
+{
+  "purpose": "Шаблон фиксации будущего интервью, не результат исследования",
+  "respondent_code": null,
+  "role": null,
+  "interview_date": null,
+  "consent_to_notes": false,
+  "last_case_description_without_client_identifiers": null,
+  "current_steps": [],
+  "repeat_request_reasons": [],
+  "active_minutes_source": "not_measured",
+  "existing_tools": [],
+  "counterexample_without_problem": null,
+  "observed_prototype_task": null,
+  "errors_and_help_required": [],
+  "quotations_approved_for_publication": [],
+  "supports_or_refutes": [],
+  "next_check": null
+}

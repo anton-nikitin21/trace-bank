@@ -1,0 +1,31 @@
+{
+  "checked_on": "2026-10-06",
+  "python_tests": {
+    "count": 16,
+    "passed": 16
+  },
+  "ui": {
+    "runtimeErrors": [],
+    "mobileOverflow": false,
+    "checks": [
+      "incomplete approval blocked",
+      "evidence anchor",
+      "corrected approval",
+      "stale approval blocked",
+      "bad extraction blocked",
+      "economic scenario recalculation",
+      "saved history",
+      "mobile width"
+    ]
+  },
+  "portable_parity": {
+    "count": 100,
+    "mismatches": [],
+    "nativeWebMCPAvailable": false,
+    "runtimeErrors": [],
+    "mobileOverflow": false
+  },
+  "scope": "Техническая проверка синтетического профиля. Не оценка на банковских документах и не исследование пользователей.",
+  "native_powerpoint_verified": false,
+  "pdf_note": "PDF является визуальной копией слайдов; редактирование — в PPTX."
+}

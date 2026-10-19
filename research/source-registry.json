@@ -1,0 +1,100 @@
+{
+  "checked_on": "2026-10-07",
+  "scope": "Открытые источники; закрытых данных и интервью пока нет",
+  "sources": [
+    {
+      "id": "CASE",
+      "url": "https://fintechacademy.ru/task-1",
+      "publisher": "Академия Финтеха",
+      "access": "full_page",
+      "supports": "Этапы, формат сдачи, критерии и ограничения кейса",
+      "last_verified": "2026-10-07"
+    },
+    {
+      "id": "CBR-COMM",
+      "url": "https://www.cbr.ru/protection_rights/rassmotrenie-obrascheniy-potrebiteley-finansovykh-uslug/",
+      "publisher": "Банк России",
+      "access": "full_page",
+      "supports": "Качественная проблема шаблонных ответов и рекомендации о повторном запросе документов",
+      "does_not_support": "Частота и трудозатраты процесса МСБ; эффект продукта",
+      "last_verified": "2026-10-07"
+    },
+    {
+      "id": "CBR-HAND",
+      "url": "https://www.cbr.ru/press/event/?id=26864",
+      "publisher": "Банк России",
+      "published": "2025-08-25",
+      "access": "search_excerpt",
+      "supports": "Уже существующий механизм второй руки"
+    },
+    {
+      "id": "ONEC",
+      "url": "https://v8.1c.ru/its/services/1c-sverka/",
+      "publisher": "1С",
+      "access": "full_page",
+      "supports": "Функциональный аналог широкой сверки документов",
+      "last_verified": "2026-10-07"
+    },
+    {
+      "id": "FNS-MCHD",
+      "url": "https://www.nalog.gov.ru/rn39/ifns/imns39_10/info/16648314/",
+      "publisher": "ФНС России",
+      "published": "2026-09-08",
+      "access": "search_excerpt",
+      "supports": "Доступный сервис создания и проверки МЧД"
+    },
+    {
+      "id": "SBER-TRAIN",
+      "url": "https://sberuniversity.ru/edutech-club/lab/methods/dialogovye-trenazhery/",
+      "publisher": "СберУниверситет",
+      "access": "search_excerpt",
+      "supports": "Известный формат диалоговых тренажёров"
+    },
+    {
+      "id": "DIRECTUM",
+      "url": "https://www.directum.ru/clients/projects/osd-case",
+      "publisher": "Directum",
+      "access": "full_page",
+      "supports": "Кейс классификации и извлечения документов в финансовой организации",
+      "does_not_support": "Прогноз качества или экономии нашего продукта",
+      "last_verified": "2026-10-07"
+    },
+    {
+      "id": "TBANK",
+      "url": "https://www.tbank.ru/business/help/account/currency-ruble/actions/115-fz/",
+      "publisher": "Т-Банк",
+      "access": "search_excerpt_direct_open_timeout",
+      "supports": "Процесс запроса документов и помощь специалиста",
+      "does_not_support": "Отсутствие внутреннего продукта проверки комплектности"
+    },
+    {
+      "id": "TOCHKA",
+      "url": "https://tochka.com/compliance/",
+      "publisher": "Точка",
+      "access": "search_excerpt_direct_open_timeout",
+      "supports": "Комплаенс-сопровождение как альтернатива",
+      "does_not_support": "Полная функциональная матрица внутренних систем"
+    },
+    {
+      "id": "VTB-ONBOARD",
+      "url": "https://www.vtb.ru/krupnyj-biznes/raschety/raschetno-kassovoe-obsluzhivanie/onboarding-online/",
+      "publisher": "ВТБ",
+      "access": "search_excerpt_direct_open_timeout",
+      "supports": "Существующий цифровой онбординг и индивидуальный список документов"
+    },
+    {
+      "id": "CBR-ZSK",
+      "url": "https://www.cbr.ru/counteraction_m_ter/platform_zsk",
+      "publisher": "Банк России",
+      "access": "search_excerpt",
+      "supports": "Назначение платформы ЗСК — информация об уровне риска"
+    },
+    {
+      "id": "NIST-BINOM",
+      "url": "https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/exacbino.htm",
+      "publisher": "NIST",
+      "access": "search_excerpt",
+      "supports": "Точные односторонние/двусторонние биномиальные интервалы"
+    }
+  ]
+}

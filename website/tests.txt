@@ -1,0 +1,21 @@
+test_advance_does_not_require_delivery (test_engine.EngineTests.test_advance_does_not_require_delivery) ... ok
+test_bad_extraction_cannot_be_complete (test_engine.EngineTests.test_bad_extraction_cannot_be_complete) ... ok
+test_corrected_packet_complete (test_engine.EngineTests.test_corrected_packet_complete) ... ok
+test_duplicate_transaction_rejected (test_engine.EngineTests.test_duplicate_transaction_rejected) ... ok
+test_duplicates_are_not_double_counted (test_engine.EngineTests.test_duplicates_are_not_double_counted) ... ok
+test_financial_base_and_zero_realization (test_engine.EngineTests.test_financial_base_and_zero_realization) ... ok
+test_financial_no_negative_or_missing_data (test_engine.EngineTests.test_financial_no_negative_or_missing_data) ... ok
+test_initial_packet_requires_review (test_engine.EngineTests.test_initial_packet_requires_review) ... ok
+test_mixed_scheme_not_force_compared (test_engine.EngineTests.test_mixed_scheme_not_force_compared) ... ok
+test_money_exact_to_kopeck (test_engine.EngineTests.test_money_exact_to_kopeck) ... ok
+test_multiple_contracts_require_review (test_engine.EngineTests.test_multiple_contracts_require_review) ... ok
+test_partial_payments_are_summed (test_engine.EngineTests.test_partial_payments_are_summed) ... ok
+test_unknown_profile_rejected (test_engine.EngineTests.test_unknown_profile_rejected) ... ok
+test_approval_and_immutable_revision (test_server.APITests.test_approval_and_immutable_revision) ... ok
+test_cross_origin_and_invalid_packet (test_server.APITests.test_cross_origin_and_invalid_packet) ... ok
+test_history_and_missing_revision (test_server.APITests.test_history_and_missing_revision) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.543s
+
+OK

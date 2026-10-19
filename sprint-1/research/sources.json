@@ -1,0 +1,181 @@
+{
+  "project": "Trace",
+  "verified_on": "2026-10-17",
+  "timezone": "Europe/Moscow",
+  "user_research": {
+    "status": "planned_answers_not_received",
+    "planned_date": "2026-10-18",
+    "planned_n": 1,
+    "representative": false
+  },
+  "sources": [
+    {
+      "id": "CASE",
+      "publisher": "Академия Финтеха / ВТБ",
+      "title": "Финтех без границ: банк будущего для бизнеса и клиентов",
+      "url": "https://fintechacademy.ru/task-1",
+      "access": "full_page",
+      "published_on": null,
+      "supports": [
+        "Первый спринт 05.10–01.11.2026: проблема, рынок/охват, метрики, движение к MVP",
+        "Для внутренних решений оценивается охват",
+        "Предусмотрены ссылки на облачный диск, демо и исходный код"
+      ],
+      "does_not_support": [
+        "Одобрение Trace",
+        "Согласованный банковский пилот"
+      ],
+      "verified_on": "2026-10-17"
+    },
+    {
+      "id": "CBR-ADDRESS",
+      "publisher": "Банк России",
+      "title": "Рассмотрение обращений финансовыми организациями",
+      "url": "https://www.cbr.ru/protection_rights/rassmotrenie-obrascheniy-potrebiteley-finansovykh-uslug/",
+      "access": "full_page",
+      "published_on": null,
+      "locator": "раздел «Адресность», веб-строки112–124 на дату проверки",
+      "supports": [
+        "Рекомендация конкретизировать причины повторного запроса и недостающие сведения"
+      ],
+      "does_not_support": [
+        "Частота проблемы в МСБ",
+        "Средняя длительность проверки",
+        "Юридическая достаточность результата Trace"
+      ],
+      "verified_on": "2026-10-17"
+    },
+    {
+      "id": "TBANK-BUSINESS",
+      "publisher": "Т-Банк",
+      "title": "Как узнать о проверке по115-ФЗ",
+      "url": "https://www.tbank.ru/business/help/account/currency-ruble/actions/115-fz/",
+      "access": "official_search_indexed_content; direct_open_technical_error",
+      "published_on": null,
+      "supports": [
+        "Существует бизнес-сценарий запроса документов сделки и её исполнения",
+        "Точный состав зависит от обстоятельств"
+      ],
+      "does_not_support": [
+        "Доля ручной обработки",
+        "Отсутствие действующей автоматизации",
+        "Сроки проверки МСБ из страницы о физлицах"
+      ],
+      "verified_on": "2026-10-17"
+    },
+    {
+      "id": "ONEC",
+      "publisher": "1С",
+      "title": "1С:Сверка2.0 — автоматическая сверка документов с контрагентами",
+      "url": "https://v8.1c.ru/its/services/1c-sverka/",
+      "access": "full_page",
+      "published_on": null,
+      "supports": [
+        "Сверка первичных и банковских документов",
+        "Переход из расхождения в исходный документ"
+      ],
+      "does_not_support": [
+        "Trace уникален за счёт перехода к источнику"
+      ],
+      "verified_on": "2026-10-17"
+    },
+    {
+      "id": "ONEC-TERMS",
+      "publisher": "1С",
+      "title": "1С:Сверка — условия использования",
+      "url": "https://portal.1c.ru/applications/1C-Sverka",
+      "access": "full_page",
+      "published_on": null,
+      "supports": [
+        "Указаны поддерживаемые конфигурации, подключённые контрагенты и доступ в Интернет"
+      ],
+      "does_not_support": [
+        "Невозможность банковской доработки продукта"
+      ],
+      "verified_on": "2026-10-17"
+    },
+    {
+      "id": "DIRECTUM-ARTICLE",
+      "publisher": "Directum",
+      "title": "Directum Ario One — AI-система для обработки документов, совместимая с любыми классами ПО",
+      "url": "https://www.directum.ru/blog-post/directum_ario_one__ai-sistema_dlja_obrabotki_dokumentov_sovmestimaja_s_ljubymi_klassami_po",
+      "access": "full_page",
+      "published_on": "2021-01-26",
+      "supports": [
+        "Производитель описывает проверку комплектности и интеграцию с корпоративным ПО"
+      ],
+      "does_not_support": [
+        "Экономический эффект Trace",
+        "Полнота возможностей актуальной версии"
+      ],
+      "verified_on": "2026-10-17"
+    },
+    {
+      "id": "DIRECTUM-DOCS",
+      "publisher": "Directum",
+      "title": "Directum Ario One1.2. Описание продукта",
+      "url": "https://www.directum.ru/download/product_description_directum_ario_one.pdf",
+      "access": "full_pdf_text",
+      "published_on": "2021",
+      "locator": "печатные страницы23 и26 (PDF-индексы22 и25)",
+      "supports": [
+        "Настраиваемый список обязательных документов",
+        "Уведомление о нехватке; в этой версии оно информационное"
+      ],
+      "does_not_support": [
+        "Полнота текущего продукта",
+        "Сертификация Trace"
+      ],
+      "verified_on": "2026-10-17"
+    },
+    {
+      "id": "FNS-DATASET",
+      "publisher": "ФНС России",
+      "title": "Единый реестр субъектов малого и среднего предпринимательства — паспорт набора",
+      "url": "https://www.nalog.gov.ru/rn77/opendata/7707329152-rsmp/",
+      "access": "full_page",
+      "dataset_release": "2026-10-10",
+      "supports": [
+        "Актуальный на дату проверки релиз паспорта10.10.2026",
+        "Источник для описания структуры предприятий"
+      ],
+      "does_not_support": [
+        "Число пользователей Trace",
+        "Число банковских запросов",
+        "Доля неполных комплектов"
+      ],
+      "verified_on": "2026-10-17"
+    },
+    {
+      "id": "FNS-STATS",
+      "publisher": "ФНС России",
+      "title": "Реестр МСП — статистика",
+      "url": "https://rmsp.nalog.ru/statistics.html",
+      "access": "page_shell_numbers_not_loaded",
+      "supports": [
+        "Есть официальный статистический интерфейс"
+      ],
+      "does_not_support": [
+        "Нулевой размер рынка; отображённые0 не являются статистической оценкой",
+        "Актуальный численный итог не извлечён"
+      ],
+      "verified_on": "2026-10-17"
+    },
+    {
+      "id": "CBR-BANKS",
+      "publisher": "Банк России",
+      "title": "Количественные характеристики банковского сектора Российской Федерации",
+      "url": "https://www.cbr.ru/statistics/bank_sector/lic/",
+      "access": "index_page_only_current_table_not_extracted",
+      "supports": [
+        "Официальный источник для возможного будущего подсчёта банков"
+      ],
+      "does_not_support": [
+        "Число готовых покупателей Trace",
+        "Рыночная выручка",
+        "Актуальная численность в настоящем расчёте не заявляется"
+      ],
+      "verified_on": "2026-10-17"
+    }
+  ]
+}

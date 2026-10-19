@@ -1,0 +1,2 @@
+interview_id,planned_date,actual_date,status,role_generalized,customer_segment,personal_process_step,last_case_summary,manual_step,existing_automation,repeat_happened,repeat_reason,active_minutes_low,active_minutes_high,wait_time_separate,frequency_estimate,frequency_period,frequency_denominator,number_basis,quote_consented,quote_anonymized,team_interpretation,falsifier,H1_status,H2_status,limitations
+P01,2026-10-18,,planned_answers_not_received,,,,,,,,,,,,,,,,,,,,,,

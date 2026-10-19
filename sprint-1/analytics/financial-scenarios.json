@@ -1,0 +1,68 @@
+{
+  "cautious": {
+    "inputs": {
+      "cases": 30000,
+      "eligible": 0.6,
+      "adoption": 0.7,
+      "minutes_saved": 6,
+      "hour_cost": 900,
+      "realization": 0.5,
+      "development": 1800000,
+      "integration": 600000,
+      "annual_opex": 1200000
+    },
+    "processed": 12600.0,
+    "hours": 1260.0,
+    "capacity_value": 1134000.0,
+    "realized_value": 567000.0,
+    "net_annual": -633000.0,
+    "payback_months": null,
+    "opex_break_even_cases": 63492.063492063484,
+    "first_year_break_even_cases": 190476.19047619044,
+    "label": "Общие сценарные допущения команды. Меняется только годовой поток. Не данные банка."
+  },
+  "moderate": {
+    "inputs": {
+      "cases": 60000,
+      "eligible": 0.6,
+      "adoption": 0.7,
+      "minutes_saved": 6,
+      "hour_cost": 900,
+      "realization": 0.5,
+      "development": 1800000,
+      "integration": 600000,
+      "annual_opex": 1200000
+    },
+    "processed": 25200.0,
+    "hours": 2520.0,
+    "capacity_value": 2268000.0,
+    "realized_value": 1134000.0,
+    "net_annual": -66000.0,
+    "payback_months": null,
+    "opex_break_even_cases": 63492.063492063484,
+    "first_year_break_even_cases": 190476.19047619044,
+    "label": "Общие сценарные допущения команды. Меняется только годовой поток. Не данные банка."
+  },
+  "scale": {
+    "inputs": {
+      "cases": 120000,
+      "eligible": 0.6,
+      "adoption": 0.7,
+      "minutes_saved": 6,
+      "hour_cost": 900,
+      "realization": 0.5,
+      "development": 1800000,
+      "integration": 600000,
+      "annual_opex": 1200000
+    },
+    "processed": 50400.0,
+    "hours": 5040.0,
+    "capacity_value": 4536000.0,
+    "realized_value": 2268000.0,
+    "net_annual": 1068000.0,
+    "payback_months": 26.966292134831463,
+    "opex_break_even_cases": 63492.063492063484,
+    "first_year_break_even_cases": 190476.19047619044,
+    "label": "Общие сценарные допущения команды. Меняется только годовой поток. Не данные банка."
+  }
+}

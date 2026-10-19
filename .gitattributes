@@ -1,0 +1,14 @@
+* text=auto
+*.html text eol=lf
+*.js text eol=lf
+*.cjs text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.pdf binary
+*.pptx binary
+*.xlsx binary
+*.zip binary
+*.png binary
+*.jpg binary

@@ -1,0 +1,68 @@
+{
+  "version": "0.2",
+  "date": "2026-10-06",
+  "scope": "UI redesign; engine and portable rules unchanged",
+  "python_tests": {
+    "passed": 16,
+    "failed": 0,
+    "command": "python3 -m unittest -v test_engine.py test_server.py"
+  },
+  "javascript_syntax": {
+    "standalone_scripts": 4,
+    "status": "passed"
+  },
+  "ui_checks": {
+    "server_and_standalone_core_scenario": "passed",
+    "initial": {
+      "issues": 4,
+      "complete_groups": "0/3"
+    },
+    "corrected": {
+      "issues": 0,
+      "complete_groups": "3/3"
+    },
+    "evidence": "UPD-41 line 6, amount 470000",
+    "approval_record": "passed on synthetic data",
+    "edited_packet_stale_guard": "passed",
+    "standalone_json_import": "passed with corrected fixture",
+    "economics_base_net_annual": -66000,
+    "standalone_history": "passed"
+  },
+  "responsive": {
+    "viewport_widths_no_horizontal_overflow": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "screenshots": [
+      "preview-desktop.jpg",
+      "preview-mobile.jpg"
+    ],
+    "physical_phone_tested": false
+  },
+  "console": {
+    "fresh_browser_session_errors": 0,
+    "fixed_during_development": "syntax error in duplicate inserted navigation callback"
+  },
+  "motion": {
+    "reduced_motion_css_and_js": true,
+    "live_preference_change_handler": true,
+    "browser_emulated_preference_tested": false
+  },
+  "standalone_bytes": 83610,
+  "standalone_sha256": "cf5ab698854070642bfcb7ccf95912956a01c1f7bade9645d768cd8fee81270d",
+  "limits": [
+    "report download event not captured by browser automation",
+    "no network speed benchmark or physical phone test",
+    "pitch deck and previous video retain old UI"
+  ],
+  "deployment": {
+    "site_id": "appgprj_6ac4c6355df08191b8809a5b6a241936",
+    "version_id": "appgprj_6ac4c6355df08191b8809a5b6a241936~appgver_2abe671c19108191be5526929ce6011c",
+    "deployment_id": "appgdep_6ac5198f52d8819189993b23f114fa88",
+    "source_sha": "3b662d13ea567b00599c2d9ba0e78406cc532491",
+    "status": "succeeded",
+    "url": "https://osnovanie-super-bobry.bu-rchfieldadams12.chatgpt.site"
+  }
+}

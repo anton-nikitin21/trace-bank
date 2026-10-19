@@ -1,0 +1,13 @@
+{
+  "name": "trace-bank-demo",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Trace: synthetic bank employee document review demo",
+  "scripts": {
+    "dev": "python -m http.server 8766 --bind 127.0.0.1 --directory website",
+    "check": "python scripts/check_project.py",
+    "test": "python -m unittest discover -s app -v",
+    "test:browser-engine": "node scripts/test_browser_engine.cjs"
+  },
+  "engines": { "node": ">=22" }
+}

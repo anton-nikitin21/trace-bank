@@ -74,13 +74,25 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(b)))
         self.end_headers()
         self.wfile.write(b)
+    def reject_post(self, value, status):
+        # Drain only bounded bodies before closing. On Windows, closing with
+        # unread request bytes can reset the connection before the JSON error
+        # reaches the client. Rejected bodies are never parsed or stored.
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            length = 0
+        if 0 < length <= MAX_BODY:
+            self.rfile.read(length)
+        return self.send(value, status)
+
     def do_POST(self):
         path = urlparse(self.path).path
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://127.0.0.1:{PORT}", f"http://localhost:{PORT}"):
-            return self.send({"error": "Чужой Origin запрещён"}, 403)
+            return self.reject_post({"error": "Чужой Origin запрещён"}, 403)
         if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
-            return self.send({"error": "Требуется application/json"}, 415)
+            return self.reject_post({"error": "Требуется application/json"}, 415)
         try:
             length = int(self.headers.get("Content-Length", "0"))
             if length <= 0 or length > MAX_BODY:

@@ -5,21 +5,21 @@ import re
 import sys
 
 root=Path(__file__).resolve().parents[1]
-source=(root/'website/demo.html').read_text(encoding='utf-8')
-gate='''<section id="auth-gate" class="auth-gate" aria-labelledby="auth-title">
-<a href="index.html" class="auth-brand">trace.</a><p class="chip">Рабочее место сотрудника банка</p>
-<h1 id="auth-title">Вход в Trace</h1><p id="auth-status" role="status">Подключаем вход…</p>
+source=(root/'templates/workspace.html').read_text(encoding='utf-8')
+gate='''<section id="auth-gate" class="auth-gate" aria-label="Вход в приложение Trace">
+<div class="auth-logo"><img src="assets/trace-logo.png" alt="Trace" width="1280" height="853"></div>
+<p id="auth-status" role="status">Подключаем вход…</p>
 <div id="auth-gate-profile"></div><div id="auth-sign-in"></div><div id="auth-organizations"></div>
 <div class="auth-actions"><button id="auth-retry" hidden>Повторить подключение</button><button id="auth-sign-out" hidden>Выйти из аккаунта</button></div>
-<p class="auth-demo-note">Демонстрационный кабинет работает с вымышленными комплектами документов.</p>
-<a href="demo.html">Посмотреть публичное демо без регистрации →</a></section>
-<div id="trace-workspace" hidden inert><div class="auth-toolbar"><span id="auth-organization-name"></span><div id="auth-switcher"></div><div id="auth-user"></div></div>'''
+</section>
+<div id="trace-workspace" hidden inert><div class="auth-toolbar"><span id="auth-organization-name"></span><div class="auth-control"><span class="auth-control-label" id="auth-org-label">Организация</span><div id="auth-switcher" aria-labelledby="auth-org-label"></div></div><div class="auth-control"><span class="auth-control-label" id="auth-profile-label">Мой профиль</span><div id="auth-user" aria-labelledby="auth-profile-label"></div></div><button id="auth-workspace-sign-out" type="button">Выйти</button></div>'''
 source=source.replace('<title>Trace — демонстрация проверки комплекта</title>','<title>Trace — кабинет сотрудника</title>')
 source=source.replace('<body><div id="trace-workspace">','<body data-auth-required="true">'+gate)
 source=source.replace('</head>','<link rel="stylesheet" href="assets/auth.css"></head>')
-source=source.replace('<script src="assets/queue.js"></script>','<script src="assets/queue.js"></script><script src="assets/auth-config.js"></script><script src="assets/auth.js"></script>')
-config_version=hashlib.sha256((root/'website/assets/auth-config.js').read_text(encoding='utf-8').encode()).hexdigest()[:12]
-source=source.replace('src="assets/auth-config.js"',f'src="assets/auth-config.js?v={config_version}"')
+source=source.replace('<script src="assets/queue.js"></script>','<script src="assets/queue.js"></script><script src="assets/auth-config.js"></script><script src="assets/clerk-ru.js"></script><script src="assets/auth.js"></script>')
+for asset in ('auth-config.js','clerk-ru.js','auth.js','auth.css'):
+    version=hashlib.sha256((root/'website/assets'/asset).read_bytes()).hexdigest()[:12]
+    source=source.replace(f'assets/{asset}"',f'assets/{asset}?v={version}"')
 source=re.sub(r'<script>if\(document\.modelContext\?\.registerTool\).*?</script>','',source,flags=re.S)
 target=root/'website/workspace.html'
 if '--check' in sys.argv:

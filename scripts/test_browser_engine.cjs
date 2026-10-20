@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const { webcrypto } = require('node:crypto');
-const html = fs.readFileSync(path.join(__dirname, '../website/demo.html'), 'utf8');
+const html = fs.readFileSync(path.join(__dirname, '../templates/workspace.html'), 'utf8');
 const blocks = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(match => match[1]);
 const fixtures = blocks.find(code => code.startsWith('window.INITIAL_PACKET='));
 const engine = blocks.find(code => code.includes('async function localApi('));

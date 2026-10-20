@@ -13,9 +13,9 @@ function persistDemo() {
   if (resettingDemo) return;
   try {
     localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify({version:2,cases:caseQueue,revisions:[...localRevisions],counter:localCounter}));
-    $('storageStatus').textContent='Демо сохранено в этом браузере';
+    $('storageStatus').textContent='Изменения сохранены в этом браузере';
   } catch(error) {
-    $('storageStatus').textContent='Браузер не сохранил демо. Изменения доступны до перезагрузки.';
+    $('storageStatus').textContent='Браузер не сохранил изменения. Изменения доступны до перезагрузки.';
   }
 }
 

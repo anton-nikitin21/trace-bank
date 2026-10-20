@@ -26,9 +26,24 @@
     await loadScript(`https://${domain}/npm/@clerk/ui@1/dist/ui.browser.js`);
     await loadScript(`https://${domain}/npm/@clerk/clerk-js@6/dist/clerk.browser.js`,{'data-clerk-publishable-key':key});
     const clerk=window.Clerk;
-    await clerk.load({ui:{ClerkUI:window.__internal_ClerkUICtor}});
-    let mode='',activeIdentity='';
+    await clerk.load({ui:{ClerkUI:window.__internal_ClerkUICtor},
+      localization:{...window.TRACE_CLERK_RU,
+        organizationSwitcher:{...window.TRACE_CLERK_RU?.organizationSwitcher,action__openOrganizationSwitcher:'Выбрать организацию',action__closeOrganizationSwitcher:'Закрыть выбор организации'},
+        formFieldAction__showPassword:'Показать пароль',formFieldAction__hidePassword:'Скрыть пароль',
+        formFieldInputPlaceholder__signUpPassword:'Придумайте пароль',
+        formFieldInputPlaceholder__password:'Введите пароль',
+        formFieldInputPlaceholder__emailAddress:'Введите почту',
+ socialButtonsBlockButton:"Войти через {{provider|titleize}}",socialButtonsBlockButtonManyProviders:"Войти через {{provider|titleize}}",
+        signIn:{...window.TRACE_CLERK_RU?.signIn,start:{...window.TRACE_CLERK_RU?.signIn?.start,title:'Вход в Trace',subtitle:'',actionText:'Нет аккаунта?',actionLink:'Создать',actionLink__use_phone:'По телефону',actionLink__use_email:'По почте'}},
+        signUp:{...window.TRACE_CLERK_RU?.signUp,start:{...window.TRACE_CLERK_RU?.signUp?.start,title:'Регистрация в Trace',subtitle:''}}},
+      appearance:{variables:{fontFamily:'Arial, Helvetica, sans-serif',colorPrimary:'#235fa4',borderRadius:'10px'},elements:{headerTitle:{fontSize:'24px',lineHeight:'1.3',letterSpacing:'-.5px'}}}
+    });
+    const pageUrl=location.origin+location.pathname;
+    const isSignUp=new URLSearchParams(location.search || '').get('auth')==='signup';
+    gate.classList?.toggle('auth-register',isSignUp);
+    let mode='',activeIdentity='',signingOut=false;
     function render(state) {
+      if(signingOut) return;
       const {user,organization}=state;
       const next=!user?'signed-out':!organization?'organization':'workspace';
       const identity=JSON.stringify([user?.id,organization?.id]);
@@ -37,12 +52,17 @@
       }
       if (mode===next) return;
       lock();
-      if (mode==='signed-out') clerk.unmountSignIn(byId('auth-sign-in'));
+      if (mode==='signed-out') {if(isSignUp) clerk.unmountSignUp(byId('auth-sign-in')); else clerk.unmountSignIn(byId('auth-sign-in'));}
       if (mode==='organization') {clerk.unmountOrganizationList(byId('auth-organizations'));clerk.unmountUserButton(byId('auth-gate-profile'));}
       mode=next;signOut.hidden=!user;
       if (!user) {
         status.textContent='Войдите в Trace, чтобы открыть рабочее место сотрудника.';
-        clerk.mountSignIn(byId('auth-sign-in'),{routing:'hash',forceRedirectUrl:location.origin+location.pathname,signUpForceRedirectUrl:location.origin+location.pathname});
+        const options={routing:'hash',oauthFlow:'redirect',appearance:{options:{socialButtonsPlacement:'bottom'},
+          variables:{fontFamily:'Arial, Helvetica, sans-serif'},
+          elements:{rootBox:{width:'100%'},cardBox:{width:'100%',boxShadow:'none',border:'none',borderRadius:'0'},card:{width:'100%',padding:'20px 0 12px',boxShadow:'none',border:'none',background:'transparent'},headerTitle:{fontFamily:'Arial, Helvetica, sans-serif',fontSize:'22px'},lastAuthenticationStrategyBadge:{display:'none'}}
+        },forceRedirectUrl:pageUrl,signInForceRedirectUrl:pageUrl,signUpForceRedirectUrl:pageUrl,signInUrl:pageUrl,signUpUrl:pageUrl+'?auth=signup'};
+        if(isSignUp) clerk.mountSignUp(byId('auth-sign-in'),options);
+        else clerk.mountSignIn(byId('auth-sign-in'),options);
       } else if (!organization) {
         status.textContent='Выберите организацию. Если список пуст, администратор приложения должен пригласить вас в организацию.';
         clerk.mountUserButton(byId('auth-gate-profile'));
@@ -57,10 +77,27 @@
         document.dispatchEvent(new CustomEvent('trace:authenticated'));
       }
     }
-    signOut.onclick=async()=>{
-      signOut.disabled=true;
-      try {await clerk.signOut();} catch(error) {status.textContent='Не удалось завершить сеанс. Повторите выход.';} finally {signOut.disabled=false;}
+    const workspaceSignOut=byId('auth-workspace-sign-out');
+    const exit=async()=>{
+      if(signingOut) return;
+      signingOut=true;
+      lock();window.TRACE_SESSION=null;
+      gate.classList?.add('auth-exiting');
+      status.textContent='Выходим из аккаунта…';
+      signOut.disabled=true;workspaceSignOut.disabled=true;
+      try {
+        // Wait for Clerk to finish revoking sessions before navigating.
+        // Its listener can fire before this promise resolves.
+        await clerk.signOut();
+        location.replace(pageUrl);
+      } catch(error) {
+        signingOut=false;
+        status.textContent='Не удалось выйти. Проверьте соединение и повторите.';
+        signOut.hidden=false;signOut.textContent='Повторить выход';
+        signOut.disabled=false;workspaceSignOut.disabled=false;
+      }
     };
+    signOut.onclick=exit;workspaceSignOut.onclick=exit;
     render(clerk);
     clerk.addListener(state=>{try {render(state);} catch(error) {lock();status.textContent='Не удалось открыть кабинет. Повторите вход.';}});
   } catch(error) {lock();status.textContent=error.message;retry.hidden=false;}

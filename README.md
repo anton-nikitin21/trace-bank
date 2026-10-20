@@ -42,6 +42,8 @@ python -m http.server 8766 --bind 127.0.0.1 --directory website
 python -m unittest discover -s app -v
 python scripts/check_project.py
 node scripts/test_browser_engine.cjs
+python scripts/build_workspace.py --check
+node scripts/test_auth.cjs
 ```
 
 Проверяются правила и API, локальные ссылки и синтаксис JavaScript, а также фактический браузерный движок на исходном и дополненном комплекте. GitHub Actions выполняет те же проверки при push и PR.
@@ -65,6 +67,6 @@ python server.py
 
 ## Авторизация и ограничения
 
-Clerk подготовлен без Publishable Key: подключение описано в [docs/CLERK-SETUP.md](docs/CLERK-SETUP.md). Никогда не помещайте Secret Key в браузер или коммит. Для банковского внедрения нужны серверные права, изоляция организаций и корпоративный SSO.
+Кабинет с актуальной очередью подключен к Clerk SDK. Для активации нужен Publishable Key вашего приложения; до этого вход закрыт. Учебное хранилище кабинета разделено по пользователю и организации. Настройка описана в [docs/CLERK-SETUP.md](docs/CLERK-SETUP.md). Никогда не помещайте Secret Key в браузер или коммит. Для банковского внедрения нужны серверные права, изоляция организаций и корпоративный SSO.
 
 OCR произвольных сканов, подлинность и достаточность для банковского решения не проверяются. Экономия времени пока является гипотезой пилота. Текущая библиотека Three.js включена с ее MIT-лицензией в website/assets/vendor/THREE-LICENSE.txt.

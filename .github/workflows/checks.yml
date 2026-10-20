@@ -18,3 +18,5 @@ jobs:
       - run: python -m unittest discover -s app -v
       - run: python scripts/check_project.py
       - run: node scripts/test_browser_engine.cjs
+      - run: python scripts/build_workspace.py --check
+      - run: node scripts/test_auth.cjs

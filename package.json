@@ -7,7 +7,11 @@
     "dev": "python -m http.server 8766 --bind 127.0.0.1 --directory website",
     "check": "python scripts/check_project.py",
     "test": "python -m unittest discover -s app -v",
-    "test:browser-engine": "node scripts/test_browser_engine.cjs"
+    "test:browser-engine": "node scripts/test_browser_engine.cjs",
+    "build:workspace": "python scripts/build_workspace.py",
+    "test:auth": "node scripts/test_auth.cjs"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  }
 }

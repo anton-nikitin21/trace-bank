@@ -3,7 +3,9 @@ const caseQueue = [];
 let activeCase = null;
 let openingCase = false;
 let resettingDemo = false;
-const DEMO_STORAGE_KEY = 'trace.synthetic-workspace.v2';
+let DEMO_STORAGE_KEY = document.body.dataset.authRequired === 'true'
+  ? 'trace.synthetic-workspace.v2:' + JSON.stringify([window.TRACE_SESSION?.userId, window.TRACE_SESSION?.organizationId])
+  : 'trace.synthetic-workspace.v2';
 const workflowNames = {new:'Новый',review:'На проверке',waiting:'Ожидает уточнения',done:'Проверка завершена'};
 const clonePacket = value => JSON.parse(JSON.stringify(value));
 
@@ -109,6 +111,10 @@ function openQueueCase(id) {
 }
 
 async function initializeQueue() {
+  if (document.body.dataset.authRequired === 'true') {
+    if (!window.TRACE_SESSION?.userId || !window.TRACE_SESSION?.organizationId) throw Error('Нужны вход и организация.');
+    DEMO_STORAGE_KEY = 'trace.synthetic-workspace.v2:' + JSON.stringify([window.TRACE_SESSION.userId,window.TRACE_SESSION.organizationId]);
+  }
   const base = clonePacket(window.INITIAL_PACKET);
   for (const [id,customer,status,received,owner] of [
     ['O-2026-0042','ООО Ритм (синтетический пример)','new','19 октября · 10:20','Анна · специалист проверки'],

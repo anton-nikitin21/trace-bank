@@ -1,0 +1,11 @@
+.auth-gate{width:min(100% - 40px,560px);margin:9vh auto;padding:32px;border:1px solid #d7e1ef;border-radius:22px;background:#fff;box-shadow:0 16px 60px #16335d0a}
+.auth-brand{display:inline-block;font-size:2rem;font-weight:700;letter-spacing:-1.5px;margin-bottom:24px;text-decoration:none;color:#102e58}
+.auth-gate h1{font-size:2rem;letter-spacing:-1px;margin:12px 0}
+.auth-gate #auth-status{color:#60718a;margin-bottom:24px}
+.auth-gate #auth-sign-in,.auth-gate #auth-organizations{max-width:100%;overflow:auto}
+.auth-gate #auth-gate-profile{margin-bottom:16px}
+.auth-actions{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}
+.auth-demo-note{font-size:.8rem;color:#60718a;border-top:1px solid #d7e1ef;padding-top:18px}
+.auth-toolbar{margin-left:224px;display:flex;justify-content:flex-end;align-items:center;gap:18px;padding:12px 36px;background:#fff;border-bottom:1px solid #d7e1ef;min-height:64px}
+#auth-organization-name{font-size:.875rem;margin-right:auto;color:#60718a}
+@media(max-width:760px){.auth-gate{padding:22px;margin:4vh auto}.auth-toolbar{margin-left:0;padding:12px 20px;flex-wrap:wrap}}

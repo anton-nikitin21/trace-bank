@@ -36,12 +36,40 @@
  socialButtonsBlockButton:"Войти через {{provider|titleize}}",socialButtonsBlockButtonManyProviders:"Войти через {{provider|titleize}}",
         signIn:{...window.TRACE_CLERK_RU?.signIn,start:{...window.TRACE_CLERK_RU?.signIn?.start,title:'Вход в Trace',subtitle:'',actionText:'Нет аккаунта?',actionLink:'Создать',actionLink__use_phone:'По телефону',actionLink__use_email:'По почте'}},
         signUp:{...window.TRACE_CLERK_RU?.signUp,start:{...window.TRACE_CLERK_RU?.signUp?.start,title:'Регистрация в Trace',subtitle:''}}},
-      appearance:{variables:{fontFamily:'Arial, Helvetica, sans-serif',colorPrimary:'#235fa4',borderRadius:'10px'},elements:{headerTitle:{fontSize:'24px',lineHeight:'1.3',letterSpacing:'-.5px'}}}
+      appearance:{variables:{fontFamily:'Arial, Helvetica, sans-serif',colorPrimary:'#8bd8ff',colorBackground:'#0a182a',colorText:'#f4f8ff',colorTextSecondary:'#94a8c3',colorInputBackground:'#071222',colorInputText:'#f4f8ff',colorNeutral:'#d0e5fa',borderRadius:'8px'},elements:{headerTitle:{fontSize:'24px',lineHeight:'1.3',letterSpacing:'-.5px'}}}
     });
     const pageUrl=location.origin+location.pathname;
     const isSignUp=new URLSearchParams(location.search || '').get('auth')==='signup';
     gate.classList?.toggle('auth-register',isSignUp);
-    let mode='',activeIdentity='',signingOut=false;
+    let mode='',activeIdentity='',signingOut=false,formObserver=null,formTimer=null;
+    function stopFormWatch(){
+      formObserver?.disconnect();formObserver=null;clearTimeout(formTimer);
+      gate.classList?.remove('auth-loading');
+      byId('auth-sign-in').removeAttribute?.('aria-busy');
+    }
+    function watchForm(){
+      // Clerk may mount its root before its asynchronously loaded form is ready.
+      if(typeof MutationObserver==='undefined')return;
+      const form=byId('auth-sign-in');
+      const ready=()=>!!form.querySelector('input,button,iframe');
+      if(ready())return;
+      gate.classList.add('auth-loading');form.setAttribute('aria-busy','true');
+      status.textContent='Загружаем форму входа…';
+      formObserver=new MutationObserver(()=>{
+        if(ready()){
+          stopFormWatch();retry.hidden=true;
+          status.textContent='Войдите в Trace, чтобы открыть рабочее место сотрудника.';
+        }
+      });
+      formObserver.observe(form,{childList:true,subtree:true});
+      formTimer=setTimeout(()=>{
+        if(mode==='signed-out'&&!ready()){
+          gate.classList.remove('auth-loading');retry.hidden=false;
+          status.textContent='Форма входа загружается дольше обычного. Проверьте соединение или повторите подключение.';
+        }
+      },15000);
+    }
+    window.addEventListener?.('pagehide',stopFormWatch,{once:true});
     function render(state) {
       if(signingOut) return;
       const {user,organization}=state;
@@ -51,6 +79,7 @@
         lock();window.TRACE_SESSION=null;status.textContent='Сессия изменилась. Обновляем рабочее пространство…';location.reload();return;
       }
       if (mode===next) return;
+      stopFormWatch();
       lock();
       if (mode==='signed-out') {if(isSignUp) clerk.unmountSignUp(byId('auth-sign-in')); else clerk.unmountSignIn(byId('auth-sign-in'));}
       if (mode==='organization') {clerk.unmountOrganizationList(byId('auth-organizations'));clerk.unmountUserButton(byId('auth-gate-profile'));}
@@ -63,6 +92,7 @@
         },forceRedirectUrl:pageUrl,signInForceRedirectUrl:pageUrl,signUpForceRedirectUrl:pageUrl,signInUrl:pageUrl,signUpUrl:pageUrl+'?auth=signup'};
         if(isSignUp) clerk.mountSignUp(byId('auth-sign-in'),options);
         else clerk.mountSignIn(byId('auth-sign-in'),options);
+        watchForm();
       } else if (!organization) {
         status.textContent='Выберите организацию. Если список пуст, администратор приложения должен пригласить вас в организацию.';
         clerk.mountUserButton(byId('auth-gate-profile'));
@@ -81,6 +111,7 @@
     const exit=async()=>{
       if(signingOut) return;
       signingOut=true;
+      stopFormWatch();
       lock();window.TRACE_SESSION=null;
       gate.classList?.add('auth-exiting');
       status.textContent='Выходим из аккаунта…';

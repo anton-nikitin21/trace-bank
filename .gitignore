@@ -18,3 +18,5 @@ coverage/
 .openai/
 .sites-runtime/
 publication-receipt.json
+
+.vercel/

@@ -52,7 +52,7 @@ function showQueueView(id) {
     button.classList.toggle('active', button.dataset.tab === id);
     button.setAttribute('aria-current', button.dataset.tab === id ? 'page' : 'false');
   });
-  $('currentView').textContent = id === 'queue' ? 'Обращения клиентов' : 'Проверка документов';
+  $('currentView').textContent = ({learn:'Как пользоваться',queue:'Обращения клиентов',case:'Проверка документов'})[id] || 'Рабочее пространство';
   document.querySelector('.demo-guide').hidden = id !== 'queue';
   if (id === 'queue') renderQueue();
   window.scrollTo({top:0,behavior:'auto'});

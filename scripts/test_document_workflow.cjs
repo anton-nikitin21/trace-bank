@@ -11,8 +11,8 @@ for(const [,code]of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)){if(c
 for(const name of ['queue.js','document-reader.js','document-review.js'])vm.runInContext(fs.readFileSync(path.join(root,'website/assets',name),'utf8'),ctx);
 const run=code=>vm.runInContext(code,ctx);const el=id=>document.getElementById(id);
 (async()=>{
- await run('startWorkspace()');assert.equal(run('caseQueue.length'),3);run("openQueueCase('O-2026-0042')");assert.equal(el('docText').readOnly,true);await run('check()');assert.equal(run('report.issue_count'),4);
- document.querySelector('[data-tab="model"]').onclick();assert.equal(el('model').hidden,false);el('m-cases').value='120000';await run('calculate()');assert.match(el('modelResult').textContent.replace(/[\s\u00a0]/g,''),/1068000/);
+ await run('startWorkspace()');assert.equal(el('learn').hidden,false);assert.equal(document.querySelector('[data-tab="learn"]').getAttribute('aria-current'),'page');el('tutorialQueue').onclick();assert.equal(el('queue').hidden,false);el('tutorialExample').onclick();assert.equal(el('case').hidden,false);assert.equal(run('caseQueue.length'),3);run("openQueueCase('O-2026-0042')");assert.equal(el('docText').readOnly,true);await run('check()');assert.equal(run('report.issue_count'),4);
+ document.querySelector('[data-tab="model"]').onclick();assert.equal(el('model').hidden,false);el('economicsHelp').onclick();assert.equal(el('economicsExplanation').hidden,false);assert.equal(el('economicsHelp').getAttribute('aria-expanded'),'true');el('economicsHelp').onclick();assert.equal(el('economicsExplanation').hidden,true);el('m-cases').value='120000';await run('calculate()');assert.match(el('modelResult').textContent.replace(/[\s\u00a0]/g,''),/1068000/);
  document.querySelector('[data-tab="research"]').onclick();assert.equal(el('research').hidden,false);assert.equal(el('hypotheses').children.length,6);
  document.querySelector('[data-tab="case"]').onclick();assert.equal(el('case').hidden,false);
  const uploadText='Тип: УПД\nНомер: УПД-44\nДоговор: Д-44\nИНН контрагента: 7700000004\nДата: 2026-09-20\nСумма: 1000';

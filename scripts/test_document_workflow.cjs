@@ -12,6 +12,9 @@ for(const name of ['queue.js','document-reader.js','document-review.js'])vm.runI
 const run=code=>vm.runInContext(code,ctx);const el=id=>document.getElementById(id);
 (async()=>{
  await run('startWorkspace()');assert.equal(run('caseQueue.length'),3);run("openQueueCase('O-2026-0042')");assert.equal(el('docText').readOnly,true);await run('check()');assert.equal(run('report.issue_count'),4);
+ document.querySelector('[data-tab="model"]').onclick();assert.equal(el('model').hidden,false);el('m-cases').value='120000';await run('calculate()');assert.match(el('modelResult').textContent.replace(/[\s\u00a0]/g,''),/1068000/);
+ document.querySelector('[data-tab="research"]').onclick();assert.equal(el('research').hidden,false);assert.equal(el('hypotheses').children.length,6);
+ document.querySelector('[data-tab="case"]').onclick();assert.equal(el('case').hidden,false);
  const uploadText='Тип: УПД\nНомер: УПД-44\nДоговор: Д-44\nИНН контрагента: 7700000004\nДата: 2026-09-20\nСумма: 1000';
  // Real upload entry point and real TXT extraction, no mocked success report.
  el('documentFiles').onchange({target:{files:[new File([uploadText],'new.txt',{type:'text/plain'})],value:''}});

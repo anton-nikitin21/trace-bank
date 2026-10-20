@@ -52,7 +52,7 @@ function showQueueView(id) {
     button.classList.toggle('active', button.dataset.tab === id);
     button.setAttribute('aria-current', button.dataset.tab === id ? 'page' : 'false');
   });
-  $('currentView').textContent = id === 'queue' ? 'Очередь обращений' : 'Комплект документов';
+  $('currentView').textContent = id === 'queue' ? 'Обращения клиентов' : 'Проверка документов';
   document.querySelector('.demo-guide').hidden = id !== 'queue';
   if (id === 'queue') renderQueue();
   window.scrollTo({top:0,behavior:'auto'});
@@ -74,7 +74,7 @@ function renderQueue() {
   const filtered = caseQueue.filter(item => (!filter || item.status === filter) &&
     `${item.packet.case_id} ${item.packet.customer}`.toLocaleLowerCase('ru').includes(query));
   $('queueCounts').textContent = `Всего: ${caseQueue.length} · Новые: ${caseQueue.filter(x=>x.status==='new').length} · Ожидают уточнения: ${caseQueue.filter(x=>x.status==='waiting').length}`;
-  $('queueRows').innerHTML = filtered.map(item => `<tr><td><strong>${escape(item.packet.case_id)}</strong><br><span class="small muted">${escape(item.received)}</span></td><td><strong>${escape(item.packet.customer)}</strong><br><span class="small muted">Проверка комплектности · профиль поставок</span></td><td>${item.packet.transactions.length} операции<br><span class="small muted">${item.packet.documents.length} документов</span></td><td><span class="queue-status ${item.status}">${workflowNames[item.status]}</span></td><td><button data-open-case="${escape(item.packet.case_id)}">Открыть обращение</button></td></tr>`).join('') || '<tr><td colspan="5">Обращения не найдены. Измените поиск или статус.</td></tr>';
+  $('queueRows').innerHTML = filtered.map(item => `<tr><td><strong>${escape(item.packet.case_id)}</strong><br><span class="small muted">${escape(item.received)}</span></td><td><strong>${escape(item.packet.customer)}</strong><br><span class="small muted">Поставка товаров</span></td><td>${item.packet.transactions.length} платежей<br><span class="small muted">${item.packet.documents.length} документов</span></td><td><span class="queue-status ${item.status}">${workflowNames[item.status]}</span></td><td><button data-open-case="${escape(item.packet.case_id)}">Открыть обращение</button></td></tr>`).join('') || '<tr><td colspan="5">Обращения не найдены. Измените поиск или статус.</td></tr>';
   document.querySelectorAll('[data-open-case]').forEach(button => button.onclick = () => openQueueCase(button.dataset.openCase));
 }
 
@@ -128,9 +128,9 @@ async function initializeQueue() {
     const raw=localStorage.getItem(DEMO_STORAGE_KEY);
     if (raw) {
       const saved=JSON.parse(raw);
-      if (saved.version!==2 || !Array.isArray(saved.cases) || saved.cases.length!==3 || !Array.isArray(saved.revisions) || !Number.isSafeInteger(saved.counter)) throw Error('Неизвестный формат сохранения');
+      if (saved.version!==2 || !Array.isArray(saved.cases) || saved.cases.length<3 || saved.cases.length>100 || !Array.isArray(saved.revisions) || !Number.isSafeInteger(saved.counter)) throw Error('Неизвестный формат сохранения');
       for (const [index,item] of saved.cases.entries()) {
-        if (item.packet?.case_id!==caseQueue[index].packet.case_id || !Array.isArray(item.packet.documents) || !Array.isArray(item.packet.transactions) || !Object.hasOwn(workflowNames,item.status) || !Array.isArray(item.events)) throw Error('Повреждённое сохранение');
+        if (!item.packet?.case_id || saved.cases.some((other,j)=>j!==index && other.packet?.case_id===item.packet.case_id) || !Array.isArray(item.packet.documents) || !Array.isArray(item.packet.transactions) || !Object.hasOwn(workflowNames,item.status) || !Array.isArray(item.events)) throw Error('Повреждённое сохранение');
       }
       caseQueue.splice(0,caseQueue.length,...saved.cases);
       for (const entry of saved.revisions) {if (!Array.isArray(entry) || entry.length!==2) throw Error('Повреждённая история');localRevisions.set(...entry);}
@@ -139,7 +139,7 @@ async function initializeQueue() {
     }
   } catch(error) { $('storageStatus').textContent='Сохранение не прочитано. Открыта новая демо-сессия.'; }
   $('resetDemo').onclick=()=>{
-    if (!window.confirm('Сбросить учебные обращения, правки и историю в этом браузере?')) return;
+    if (!window.confirm('Удалить все обращения, документы, правки и историю в этом браузере?')) return;
     try {localStorage.removeItem(DEMO_STORAGE_KEY);} catch(error) {toast('Браузер не разрешил сброс.');return;}
     resettingDemo=true;
     location.reload();

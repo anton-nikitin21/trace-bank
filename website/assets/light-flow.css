@@ -1,0 +1,6 @@
+/* Viewport-sized canvas. World geometry spans hero + scenario, never the whole site. */
+.light-field{position:fixed;inset:0 0 auto;height:100svh;pointer-events:none;z-index:-1;overflow:hidden;opacity:.94}
+.flow-canvas{display:block;width:100%;height:100%;pointer-events:none}
+.light-field:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#050b18ba 0%,#050b1850 32%,transparent 62%)}
+@media(max-width:600px){.light-field{opacity:.73}.light-field:after{background:linear-gradient(90deg,#050b18c9,#050b1870 42%,transparent 85%)}}
+@media(prefers-reduced-motion:reduce){.light-field{opacity:.55}}

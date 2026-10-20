@@ -9,7 +9,11 @@
     "test": "python -m unittest discover -s app -v",
     "test:browser-engine": "node scripts/test_browser_engine.cjs",
     "build:workspace": "python scripts/build_workspace.py",
-    "test:auth": "node scripts/test_auth.cjs"
+    "test:auth": "node scripts/test_auth.cjs",
+    "build:preview": "python scripts/build_preview.py",
+    "test:ui": "node scripts/verify_redesign.mjs",
+    "test:auth-loading": "node scripts/test_auth_loading.mjs",
+    "test:motion": "node scripts/test_light_flow.mjs"
   },
   "engines": {
     "node": ">=22"

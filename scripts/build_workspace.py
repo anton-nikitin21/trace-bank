@@ -7,10 +7,14 @@ import sys
 root=Path(__file__).resolve().parents[1]
 source=(root/'templates/workspace.html').read_text(encoding='utf-8')
 gate='''<section id="auth-gate" class="auth-gate" aria-label="Вход в приложение Trace">
-<div class="auth-logo"><img src="assets/trace-logo.png" alt="Trace" width="1280" height="853"></div>
+<a href="index.html" class="auth-home" aria-label="Trace — главная"><span class="trace-wordmark"><img src="assets/trace-logo.png" alt="Trace" width="1280" height="853"></span><span>На главную ↗</span></a>
+<div class="auth-scene" aria-hidden="true"><div class="auth-orbit"></div><div class="auth-core"><span>trace.</span></div><span class="auth-scene-label">ОПЕРАЦИЯ → ОСНОВАНИЕ → УТОЧНЕНИЕ</span></div>
+<p class="auth-eyebrow">РАБОЧЕЕ МЕСТО СОТРУДНИКА БАНКА</p><h1 id="auth-title">Всё начинается<br><em>со связи.</em></h1>
 <p id="auth-status" role="status">Подключаем вход…</p>
 <div id="auth-gate-profile"></div><div id="auth-sign-in"></div><div id="auth-organizations"></div>
+<p class="auth-context">Проверка комплектности документов<br>и подготовка адресных уточнений.</p>
 <div class="auth-actions"><button id="auth-retry" hidden>Повторить подключение</button><button id="auth-sign-out" hidden>Выйти из аккаунта</button></div>
+<p class="auth-note">Доступ по аккаунту и организации.<br>Рабочий прототип · данные примеров вымышлены.</p>
 </section>
 <div id="trace-workspace" hidden inert><div class="auth-toolbar"><span id="auth-organization-name"></span><div class="auth-control"><span class="auth-control-label" id="auth-org-label">Организация</span><div id="auth-switcher" aria-labelledby="auth-org-label"></div></div><div class="auth-control"><span class="auth-control-label" id="auth-profile-label">Мой профиль</span><div id="auth-user" aria-labelledby="auth-profile-label"></div></div><button id="auth-workspace-sign-out" type="button">Выйти</button></div>'''
 source=source.replace('<title>Trace — демонстрация проверки комплекта</title>','<title>Trace — кабинет сотрудника</title>')

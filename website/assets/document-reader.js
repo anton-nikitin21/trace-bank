@@ -73,13 +73,21 @@
   const config=()=>({...defaults,...root.TRACE_DOCUMENT_PATHS});
   function loadScript(url){return new Promise((resolve,reject)=>{const s=document.createElement('script');const timer=setTimeout(()=>{s.remove();reject(Error('Модуль распознавания не загрузился за 60 секунд. Повторите попытку.'));},60000);s.src=url;s.onload=()=>{clearTimeout(timer);resolve();};s.onerror=()=>{clearTimeout(timer);s.remove();reject(Error('Не удалось загрузить модуль распознавания. Проверьте соединение и повторите.'))};document.head.append(s);});}
   async function getPDF(){if(!pdfPromise)pdfPromise=import(config().pdf).then(lib=>{lib.GlobalWorkerOptions.workerSrc=config().pdfWorker;return lib}).catch(error=>{pdfPromise=null;throw Error('Не удалось загрузить модуль PDF. Проверьте соединение и повторите.');});return pdfPromise;}
-  async function getOCR(progress){
-    if(!scriptPromise)scriptPromise=loadScript(config().tesseract).catch(e=>{scriptPromise=null;throw e});await scriptPromise;
+  async function getOCR(progress,signal){
+    if(!scriptPromise)scriptPromise=loadScript(config().tesseract).catch(e=>{scriptPromise=null;throw e});await scriptPromise;abortCheck(signal);
     currentProgress=progress;
     if(!worker){progress('Загружаем языки распознавания. При первом запуске это может занять несколько минут.');const generation=workerGeneration;creatingWorker=root.Tesseract.createWorker('rus+eng',1,{workerPath:config().worker,corePath:config().core,langPath:config().lang,logger:m=>{if(m.status==='recognizing text')currentProgress('Распознаём текст: '+Math.round((m.progress||0)*100)+'%');}});let timer;const pending=creatingWorker;try{const result=await Promise.race([pending,new Promise((_,reject)=>{timer=setTimeout(()=>{workerGeneration++;pending.then(w=>w.terminate()).catch(()=>{});reject(Error('Распознавание не запустилось за 90 секунд. Проверьте соединение и повторите.'));},90000);})]);if(generation!==workerGeneration){await result.terminate();throw new DOMException('Обработка отменена.','AbortError');}worker=result;}finally{clearTimeout(timer);if(creatingWorker===pending)creatingWorker=null;}}
     return worker;
   }
-  async function ocr(image,progress,signal){const w=await getOCR(progress);abortCheck(signal);const cancel=()=>{if(worker===w)worker=null;w.terminate().catch(()=>{});};signal?.addEventListener('abort',cancel,{once:true});try{const result=await w.recognize(image);abortCheck(signal);return {text:result.data.text,confidence:result.data.confidence};}finally{signal?.removeEventListener('abort',cancel);}}
+  function abortable(promise,signal,onAbort=()=>{}){
+    if(!signal)return promise;
+    return new Promise((resolve,reject)=>{const cancel=()=>{onAbort();reject(new DOMException('Обработка отменена.','AbortError'));};if(signal.aborted){cancel();Promise.resolve(promise).catch(()=>{});return;}signal.addEventListener('abort',cancel,{once:true});Promise.resolve(promise).then(value=>{signal.removeEventListener('abort',cancel);resolve(value);},error=>{signal.removeEventListener('abort',cancel);reject(error);});});
+  }
+  async function ocr(image,progress,signal){
+    const w=await abortable(getOCR(progress,signal),signal,()=>{stop().catch(()=>{});});abortCheck(signal);
+    const cancel=()=>{if(worker===w)worker=null;w.terminate().catch(()=>{});};
+    const result=await abortable(w.recognize(image),signal,cancel);abortCheck(signal);return {text:result.data.text,confidence:result.data.confidence};
+  }
   async function stop(){workerGeneration++;const pending=creatingWorker;creatingWorker=null;if(pending)pending.then(w=>w.terminate()).catch(()=>{});if(worker){const w=worker;worker=null;await w.terminate();}}
   function abortCheck(signal){if(signal?.aborted)throw new DOMException('Обработка отменена.','AbortError');}
   async function fileKind(file){
@@ -96,10 +104,10 @@
     abortCheck(signal);const kind=await fileKind(file);let text='',pages=1,method='text',confidence=null;
     if(kind==='txt')text=await file.text();
     else if(kind==='pdf'){
-      const lib=await getPDF();abortCheck(signal);
+      const lib=await abortable(getPDF(),signal);abortCheck(signal);
       const task=lib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false,enableXfa:false,standardFontDataUrl:config().pdfFonts,cMapUrl:config().pdfCmaps,cMapPacked:true,wasmUrl:config().pdfWasm});let pdf=null;const cancelPDF=()=>{task.destroy().catch(()=>{});};signal?.addEventListener('abort',cancelPDF,{once:true});
       try{
-        pdf=await task.promise;pages=pdf.numPages;if(pages>LIMITS.pages)throw Error('В PDF больше 20 страниц. Разделите файл.');const chunks=[];let scanned=0;
+        pdf=await abortable(task.promise,signal,cancelPDF);pages=pdf.numPages;if(pages>LIMITS.pages)throw Error('В PDF больше 20 страниц. Разделите файл.');const chunks=[];let scanned=0;
         for(let n=1;n<=pages;n++){
           abortCheck(signal);progress(`Читаем PDF: страница ${n} из ${pages}.`);const page=await pdf.getPage(n);const content=await page.getTextContent();
           let part='';let lastY=null;for(const item of content.items){if(typeof item.str!=='string')continue;const y=item.transform?.[5];if(lastY!==null&&Math.abs(y-lastY)>3)part+='\n';part+=item.str+(item.hasEOL?'\n':' ');lastY=y;}

@@ -20,5 +20,13 @@ const ctx=vm.createContext({window:{},crypto:webcrypto,TextEncoder,structuredClo
  await assert.rejects(D.read(new File(['bad'],'false.png',{type:'image/png'})),/не соответствует PNG/);
  await assert.rejects(D.read(new File(['bad'],'unsupported.docx')),/Поддерживаются/);
  const abort=new AbortController();abort.abort();await assert.rejects(D.read(file,{signal:abort.signal}),/отменена/);
+ // Cancellation must reject even if the OCR worker's recognize promise never settles.
+ let terminated=0;const fakeWorker={recognize:()=>new Promise(()=>{}),terminate:async()=>{terminated++;}};
+ const canvas={width:0,height:0,getContext:()=>({drawImage(){}})};
+ const abortContext=vm.createContext({window:{Tesseract:{createWorker:async()=>fakeWorker}},document:{createElement:tag=>tag==='canvas'?canvas:{remove(){}},head:{append:script=>queueMicrotask(()=>script.onload())}},createImageBitmap:async()=>({width:10,height:10,close(){}}),DOMException,File,setTimeout,clearTimeout});
+ vm.runInContext(fs.readFileSync(path.join(__dirname,'../website/assets/document-reader.js'),'utf8'),abortContext);
+ const png=new File([new Uint8Array([137,80,78,71,13,10,26,10])],'cancel.png');const during=new AbortController();
+ const pending=abortContext.window.TraceDocuments.read(png,{signal:during.signal});setTimeout(()=>during.abort(),20);
+ await assert.rejects(pending,/отменена/);assert(terminated>0);await abortContext.window.TraceDocuments.stop();
  console.log('PASS: labeled and ordinary Russian fields; ambiguous INNs/dates stay blank; tax not mistaken for total; missing fields and invalid dates; exact money; manual origin and immutable source; engine interop; actual TXT; file signatures; cancellation.');
 })().catch(e=>{console.error(e);process.exitCode=1});

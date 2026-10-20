@@ -154,6 +154,6 @@ document.querySelectorAll('nav button[data-tab]').forEach(b=>b.setAttribute('ari
 document.querySelector('nav').addEventListener('click',()=>document.querySelectorAll('nav button[data-tab]').forEach(b=>b.setAttribute('aria-current',b.classList.contains('active')?'page':'false')));
 document.querySelector('#evidenceDialog').addEventListener('click',e=>{if(e.target===$('evidenceDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close()}});
 
-async function startWorkspace(){try{await initializeQueue();await calculate()}catch(e){toast(e.message)}}
+async function startWorkspace(){try{await initializeQueue();await window.initializeDocumentReview();await calculate()}catch(e){toast(e.message)}}
 if(document.body.dataset.authRequired==='true'){document.addEventListener('trace:authenticated',startWorkspace,{once:true});}else{window.addEventListener('DOMContentLoaded',startWorkspace,{once:true});}
-</script></div><script src="assets/queue.js"></script><script src="assets/auth-config.js?v=a6dd7ca8236b"></script><script src="assets/clerk-ru.js?v=30dbb4d9dc9a"></script><script src="assets/auth.js?v=389bf39899bb"></script><script src="assets/document-reader.js?v=1"></script><script src="assets/document-review.js?v=1"></script></body></html>
+</script></div><script src="assets/document-reader.js?v=1"></script><script src="assets/document-review.js?v=1"></script><script src="assets/queue.js"></script><script src="assets/auth-config.js?v=a6dd7ca8236b"></script><script src="assets/clerk-ru.js?v=30dbb4d9dc9a"></script><script src="assets/auth.js?v=389bf39899bb"></script></body></html>

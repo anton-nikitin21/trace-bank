@@ -174,5 +174,5 @@
     // A pending read is never allowed to finish into another account or case.
     window.addEventListener('pagehide',()=>{controller?.abort();D.stop().catch(()=>{});});
   }
-  const oldInitialize=initializeQueue;initializeQueue=async()=>{await oldInitialize();await initialize();};
+  window.initializeDocumentReview=initialize;
 })();

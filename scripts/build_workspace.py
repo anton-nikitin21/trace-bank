@@ -1,5 +1,6 @@
 """Generate the employee page from the current public demo and Clerk shell."""
 from pathlib import Path
+import hashlib
 import re
 import sys
 
@@ -17,6 +18,8 @@ source=source.replace('<title>Trace — демонстрация проверк�
 source=source.replace('<body><div id="trace-workspace">','<body data-auth-required="true">'+gate)
 source=source.replace('</head>','<link rel="stylesheet" href="assets/auth.css"></head>')
 source=source.replace('<script src="assets/queue.js"></script>','<script src="assets/queue.js"></script><script src="assets/auth-config.js"></script><script src="assets/auth.js"></script>')
+config_version=hashlib.sha256((root/'website/assets/auth-config.js').read_text(encoding='utf-8').encode()).hexdigest()[:12]
+source=source.replace('src="assets/auth-config.js"',f'src="assets/auth-config.js?v={config_version}"')
 source=re.sub(r'<script>if\(document\.modelContext\?\.registerTool\).*?</script>','',source,flags=re.S)
 target=root/'website/workspace.html'
 if '--check' in sys.argv:

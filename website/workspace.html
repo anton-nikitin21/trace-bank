@@ -187,4 +187,4 @@ document.querySelector('#evidenceDialog').addEventListener('click',e=>{if(e.targ
 
 async function startWorkspace(){try{await initializeQueue();await calculate()}catch(e){toast(e.message)}}
 if(document.body.dataset.authRequired==='true'){document.addEventListener('trace:authenticated',startWorkspace,{once:true});}else{window.addEventListener('DOMContentLoaded',startWorkspace,{once:true});}
-</script></div><script src="assets/queue.js"></script><script src="assets/auth-config.js"></script><script src="assets/auth.js"></script></body></html>
+</script></div><script src="assets/queue.js"></script><script src="assets/auth-config.js?v=a6dd7ca8236b"></script><script src="assets/auth.js"></script></body></html>

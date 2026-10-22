@@ -21,5 +21,6 @@ jobs:
       - run: python scripts/build_workspace.py --check
       - run: python scripts/build_preview.py --check
       - run: node scripts/test_auth.cjs
-      - run: npm ci --ignore-scripts
+      - run: npm ci --ignore-scripts --no-audit --no-fund --fetch-timeout=30000 --fetch-retries=1
+        timeout-minutes: 2
       - run: npm run test:documents

@@ -27,6 +27,8 @@ jobs:
       - run: python scripts/build_workspace.py --check
       - run: python scripts/build_preview.py --check
       - run: node scripts/test_auth.cjs
+      - run: npm ci --ignore-scripts
+      - run: npm run test:documents
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

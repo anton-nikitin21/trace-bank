@@ -13,9 +13,13 @@
     "build:preview": "python scripts/build_preview.py",
     "test:ui": "node scripts/verify_redesign.mjs",
     "test:auth-loading": "node scripts/test_auth_loading.mjs",
-    "test:motion": "node scripts/test_light_flow.mjs"
+    "test:motion": "node scripts/test_light_flow.mjs",
+    "test:documents": "node scripts/test_document_reader.cjs && node scripts/test_document_workflow.cjs"
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.12"
   }
 }

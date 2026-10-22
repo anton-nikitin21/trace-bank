@@ -24,13 +24,51 @@
     if(pending||unreviewed||busy){$('approve').disabled=true;$('prepareRequest').disabled=true;}
     if(pending||unreviewed){$('reviewStatus').textContent='Сначала проверьте поля загруженных документов или уберите ненужные файлы.';}
   }
+  function documentOrigin(doc){
+    activeCase.documentOrigins ||= {};
+    if(activeCase.documentOrigins[doc.name])return activeCase.documentOrigins[doc.name];
+    const example=[...window.INITIAL_PACKET.documents,...window.CORRECTED_PACKET.documents].some(x=>x.name===doc.name&&x.text===doc.text);
+    return activeCase.documentOrigins[doc.name]=example?'example':doc.review?'upload':'import';
+  }
+  function syncDocumentSummary(){
+    if(!packet||!activeCase)return;
+    const count={upload:0,example:0,import:0};
+    packet.documents.forEach(d=>count[documentOrigin(d)]++);
+    $('uploadedCount').textContent=String(count.upload);
+    $('docCount').textContent=String(packet.documents.length);
+    $('txCount').textContent=String(packet.transactions.length);
+    const parts=['Загружено вами: '+count.upload,'Учебных файлов: '+count.example];
+    if(count.import)parts.push('Из импортированного комплекта: '+count.import);
+    $('documentComposition').textContent=parts.join(' · ');
+    $('uploadComposition').textContent='Всего файлов в обращении: '+packet.documents.length+'. '+parts.join('. ')+'. Один PDF считается одним файлом независимо от числа страниц.';
+    if(count.example)$('uploadComposition').textContent+=' Загрузка добавляет файл к учебному комплекту. Для работы с нуля создайте новое обращение.';
+  }
+  function appendFieldSummary(card,item){
+    const doc=packet.documents.find(d=>d.name===item.name),origins=doc?.review?.origins||{};
+    const title=node('h3','Данные из '+item.name,'extracted-title');card.append(title);
+    card.append(node('p','Источник: '+(doc&&documentOrigin(doc)==='example'?'учебный пример':doc&&documentOrigin(doc)==='import'?'импортированный комплект':'ваш файл')+(item.pages?' · Страниц: '+item.pages:''),'field-summary-source'));
+    const list=node('dl',undefined,'extracted-fields');
+    for(const [key,label]of Object.entries(D.FIELD_LABELS)){
+      const cell=node('div',undefined,'extracted-field');cell.append(node('dt',label));
+      let value=item.fields?.[key]||'';
+      const missing=!value;
+      if(key==='amount'&&value)value=rub(Number(value.replace(',','.')));
+      if(key==='date'&&/^\d{4}-\d{2}-\d{2}$/.test(value))value=value.split('-').reverse().join('.');
+      cell.append(node('dd',missing?'Не найдено в файле':value,missing?'missing-value':''));
+      const origin=origins[key]==='manual'?'Введено аналитиком':missing?'Заполните при необходимости':'Из текста файла';
+      cell.append(node('span',origin,'field-value-origin'));list.append(cell);
+    }
+    card.append(list);
+  }
   function renderRecognitions(){
+    syncDocumentSummary();
     $('recognitionList').replaceChildren();
     for(const item of records()){
       const card=node('article',undefined,'recognition-card');const heading=node('div',undefined,'recognition-heading');heading.append(node('strong',item.name));
       const status=item.error?'Не удалось прочитать':item.processing?'Обработка':item.confirmed?'Поля подтверждены':'Нужно проверить поля';heading.append(node('span',status,'recognition-status'+(item.confirmed?' confirmed':'')));card.append(heading);
       if(item.error)card.append(node('p',item.error,'err'));
       else if(!item.processing){
+        appendFieldSummary(card,item);
         const missing=Object.keys(D.validate(item.fields||{})).map(k=>D.FIELD_LABELS[k]);const ambiguous=Object.keys(item.states||{}).filter(k=>item.states[k]==='ambiguous').map(k=>D.FIELD_LABELS[k]);
         if(missing.length)card.append(node('p','Не хватает данных для проверки: '+missing.join(', ')+'.','small'));
         if(ambiguous.length)card.append(node('p','В файле несколько вариантов: '+ambiguous.join(', ')+'. Выберите нужный.','small'));
@@ -67,7 +105,7 @@
           Object.assign(item,read,{processing:false});
           if(read.empty)item.error='Текст не найден. Добавьте более чёткий файл или заполните поля вручную по оригиналу.';
           if(old)records().splice(records().indexOf(old),1);
-          records().push(item);originals.set(keyFor(file.name),file);
+          records().push(item);activeCase.documentOrigins ||= {};activeCase.documentOrigins[file.name]='upload';originals.set(keyFor(file.name),file);
           const pending={name:file.name,text:'',sourceText:item.sourceText,review:{confirmed:false,method:item.method,pages:item.pages}};
           const at=packet.documents.findIndex(d=>d.name===file.name);if(at>=0)packet.documents[at]=pending;else packet.documents.push(pending);
           docIndex=packet.documents.findIndex(d=>d.name===file.name);docs();markDirty();loaded++;renderRecognitions();saveActiveCase();
@@ -112,7 +150,7 @@
   }
   function openCurrentDocument(){
     const d=packet?.documents[docIndex];if(!d)return;
-    let item=records().find(x=>x.name===d.name);
+    documentOrigin(d);let item=records().find(x=>x.name===d.name);
     if(!item){const source=d.sourceText||d.text;const parsed=D.extractFields(source);item={name:d.name,sourceText:source,method:'text',pages:1,confidence:null,confirmed:true,...parsed};records().push(item);}
     openReview(item);
   }
@@ -135,29 +173,69 @@
     for(const t of packet.transactions){const row=node('div',undefined,'payment-summary-row');row.append(node('span',`${t.id}: ${rub(Number(t.amount))} · ${t.counterparty} · Договор ${t.contract}`));const remove=node('button','Убрать платёж');remove.onclick=()=>{if(busy)return;packet.transactions=packet.transactions.filter(x=>x.id!==t.id);markDirty();renderPayments();};row.append(remove);$('paymentList').append(row);}
     if(!packet.transactions.length)$('paymentList').append(node('p','Платежей пока нет. Вы можете прочитать документы и заполнить их поля. Для сравнения добавьте хотя бы один платёж.','small muted'));
   }
+  function selectedIssues(){
+    if(!report)return [];
+    const row=selectedPayment===null?null:report.rows[selectedPayment];
+    return row?report.issues.filter(i=>i.contract===row.contract||i.contract===null):report.issues;
+  }
+  function openIssueDocument(name){
+    $('paymentIssuesDialog').close();
+    const index=packet.documents.findIndex(d=>d.name===name);
+    if(index<0){toast('Файла больше нет в обращении. Повторите проверку.');return;}
+    docIndex=index;docs();openCurrentDocument();
+  }
+  function populateIssues(container,items){
+    container.replaceChildren();
+    if(!items.length){container.append(node('p','По выбранным платежам замечаний нет. Содержание и подлинность документов проверяет сотрудник.','success-message'));return;}
+    for(const issue of items){
+      const card=node('article',undefined,'issue');card.append(node('h3',plain(issue.title)),node('p',plain(localizeMoney(issue.detail))));
+      card.append(node('p','Что сделать: '+plain(localizeMoney(issue.action||issue.detail)),'issue-next'));
+      const names=[...new Set(issue.evidence.map(e=>e.file))];
+      for(const name of names){const b=node('button','Проверить поля: '+name,'issue-edit-document');b.onclick=()=>openIssueDocument(name);card.append(b);}
+      if(!names.length){const b=node('button','Добавить недостающий документ');b.onclick=()=>{$('paymentIssuesDialog').close();go('uploadSection');$('uploadFiles').focus();};card.append(b);}
+      container.append(card);
+    }
+  }
   function renderSelectedIssues(){
-    if(!report)return;const row=selectedPayment===null?null:report.rows[selectedPayment];$('selectedPayment').textContent=row?'Платежи '+row.transaction_ids.join(', ')+'. Договор '+row.contract+'. Общие вопросы по документам также показаны.':'Все замечания по всем платежам';
-    const items=row?report.issues.filter(i=>i.contract===row.contract||i.contract===null):report.issues;$('issues').replaceChildren();
-    if(!items.length){$('issues').append(node('p','По выбранным платежам замечаний нет. Содержание и подлинность документов проверяет сотрудник.','success-message'));return;}
-    for(const issue of items){const card=node('article',undefined,'issue');card.append(node('h3',plain(issue.title)),node('p',plain(localizeMoney(issue.detail))));card.append(node('p','Следующий шаг: '+plain(issue.action||issue.detail),'issue-next'));
-      for(const e of issue.evidence){const b=node('button','Посмотреть '+e.file+' · строка '+e.line,'evidence');b.onclick=()=>showEvidence(e);card.append(b);}$('issues').append(card);}
+    if(!report)return;const row=selectedPayment===null?null:report.rows[selectedPayment];
+    $('selectedPayment').textContent=row?'Платежи '+row.transaction_ids.join(', ')+'. Договор '+row.contract+'.':'Все замечания по всем платежам';
+    populateIssues($('issues'),selectedIssues());
+  }
+  function openPaymentIssues(index){
+    if(dirty){toast('Документы изменились. Сначала повторите проверку.');go('analyze');return;}
+    selectedPayment=index;decorateReport();
+    const row=report.rows[index],items=selectedIssues();
+    $('paymentIssuesTitle').textContent='Замечания по '+row.transaction_ids.join(', ');
+    $('paymentIssuesContext').textContent='Договор '+row.contract+' · ИНН '+row.inn+' · '+rub(row.amount)+'. Замечаний: '+items.length+'.';
+    populateIssues($('paymentIssuesList'),items);
+    $('paymentIssuesDialog').showModal();
   }
   function decorateReport(){
-    if(!report)return;document.querySelectorAll('#rows .map-row').forEach((row,i)=>{row.classList.toggle('selected-payment',selectedPayment===i);const b=node('button','Посмотреть замечания','select-payment');b.setAttribute('aria-pressed',String(selectedPayment===i));b.onclick=()=>{selectedPayment=i;decorateReport();renderSelectedIssues();};row.querySelector('.select-payment')?.remove();row.querySelector('.operation-node').append(b);});renderSelectedIssues();
+    if(!report)return;document.querySelectorAll('#rows .map-row').forEach((row,i)=>{
+      row.classList.toggle('selected-payment',selectedPayment===i);
+      const count=report.issues.filter(x=>x.contract===report.rows[i].contract||x.contract===null).length;
+      const b=node('button',count?'Посмотреть замечания ('+count+')':'Посмотреть результат','select-payment');
+      b.setAttribute('aria-pressed',String(selectedPayment===i));b.setAttribute('aria-haspopup','dialog');b.onclick=()=>openPaymentIssues(i);b.disabled=dirty;
+      row.querySelector('.select-payment')?.remove();row.querySelector('.operation-node').append(b);
+      const state=row.querySelector('.state');if(state){state.title=dirty?'Результат устарел. Повторите проверку.':count?'Откройте замечания, исправьте причину и повторите проверку.':'По выбранным правилам замечаний нет.';}
+    });renderSelectedIssues();
     $('caseState').textContent=dirty?'Нужна повторная проверка':report.issue_count?'Есть вопросы к документам':'По правилам замечаний нет';
-    $('completion').title='Платежи сгруппированы по договору и ИНН. У одной причины может быть несколько замечаний.';
+    $('completion').title='Платежи сгруппированы по договору и ИНН.';
   }
   async function initialize(){
     makeDialogs();
+    const issuesDialog=node('dialog');issuesDialog.id='paymentIssuesDialog';issuesDialog.setAttribute('aria-labelledby','paymentIssuesTitle');
+    issuesDialog.innerHTML='<div class="recognition-heading"><h2 id="paymentIssuesTitle">Замечания по платежу</h2><button id="closePaymentIssues">Закрыть</button></div><p id="paymentIssuesContext"></p><p class="resolution-guide">Чтобы снять статус «Нужно уточнение», устраните указанные причины и повторите проверку. Если сведения в исходном документе верны, запросите у клиента пояснение или недостающий документ.</p><div id="paymentIssuesList"></div><button id="recheckPaymentIssues" class="primary">Повторить проверку документов</button>';
+    document.body.append(issuesDialog);$('closePaymentIssues').onclick=()=>issuesDialog.close();$('recheckPaymentIssues').onclick=async()=>{issuesDialog.close();await check();go('issuesPanel');};
     $('uploadFiles').onclick=()=>$('documentFiles').click();$('addDoc').onclick=$('uploadFiles').onclick;
     $('documentFiles').onchange=e=>{const files=Array.from(e.target.files);e.target.value='';upload(files);};
     const drop=$('uploadDrop');for(const event of ['dragenter','dragover'])drop.addEventListener(event,e=>{e.preventDefault();drop.classList.add('dragging');});for(const event of ['dragleave','drop'])drop.addEventListener(event,e=>{e.preventDefault();drop.classList.remove('dragging');});drop.addEventListener('drop',e=>upload(e.dataTransfer.files));
     $('cancelUpload').onclick=()=>{controller?.abort();D.stop().catch(()=>{});showUploadMessage('Отменяем обработку...');};
     $('reviewDocument').onclick=openCurrentDocument;$('docText').readOnly=true;$('docText').oninput=null;
     $('allPaymentIssues').onclick=()=>{selectedPayment=null;decorateReport();};
-    const originalDocs=docs;docs=()=>{originalDocs();const d=packet?.documents[docIndex];$('docText').value=d?(d.sourceText??d.text):'';$('docText').readOnly=true;$('reviewDocument').disabled=!d;$('saveDoc').hidden=true;};
-    const oldRender=render;render=r=>{oldRender(r);decorateReport();refreshGuards();};
-    const oldDirty=markDirty;markDirty=()=>{oldDirty();refreshGuards();};
+    const originalDocs=docs;docs=()=>{originalDocs();const d=packet?.documents[docIndex];$('docText').value=d?(d.sourceText??d.text):'';$('docText').readOnly=true;$('reviewDocument').disabled=!d;$('saveDoc').hidden=true;syncDocumentSummary();document.querySelectorAll('#docList button').forEach((b,i)=>{const doc=packet.documents[i];b.textContent=doc.name+' · '+({upload:'Ваш файл',example:'Учебный',import:'Импорт'})[documentOrigin(doc)];});};
+    const oldRender=render;render=r=>{oldRender(r);decorateReport();syncDocumentSummary();refreshGuards();};
+    const oldDirty=markDirty;markDirty=()=>{oldDirty();syncDocumentSummary();document.querySelectorAll('.select-payment').forEach(b=>{b.disabled=true;b.textContent='Повторите проверку';});refreshGuards();};
     const oldOpen=openQueueCase;openQueueCase=id=>{if(busy){toast('Дождитесь обработки файлов или отмените её.');return;}selectedPayment=null;oldOpen(id);records().forEach(x=>{x.processing=false;});renderRecognitions();renderPayments();docs();decorateReport();$('docCount').textContent=packet.documents.length;};
     const oldCheck=check;check=async()=>{
       if(busy)return;
@@ -167,10 +245,10 @@
     };$('analyze').onclick=check;
     const oldEvidence=showEvidence;showEvidence=e=>{const doc=packet?.documents.find(d=>d.name===e.file);if(doc?.review){docIndex=packet.documents.indexOf(doc);openCurrentDocument();}else oldEvidence(e);};
     const oldWorkflow=updateCaseWorkflow;updateCaseWorkflow=()=>{oldWorkflow();refreshGuards();};
-    for(const id of ['loadDemo','loadFixed']){const old=$(id).onclick;$(id).onclick=async()=>{if(busy)return;if(records().length&&!window.confirm('Заменить документы, платежи и распознанные поля этого обращения учебным примером?'))return;activeCase.recognition=[];await old();renderRecognitions();renderPayments();};}
+    for(const id of ['loadDemo','loadFixed']){const old=$(id).onclick;$(id).onclick=async()=>{if(busy)return;if(records().length&&!window.confirm('Заменить документы, платежи и распознанные поля этого обращения учебным примером?'))return;activeCase.recognition=[];activeCase.documentOrigins={};await old();renderRecognitions();renderPayments();};}
     $('deleteDoc').onclick=()=>{if(busy)return;const d=packet?.documents[docIndex];if(!d||!window.confirm('Убрать '+d.name+' из обращения?'))return;const item=records().find(x=>x.name===d.name);if(item)records().splice(records().indexOf(item),1);packet.documents.splice(docIndex,1);docIndex=Math.max(0,docIndex-1);docs();markDirty();renderRecognitions();};
     $('paymentForm').onsubmit=e=>{e.preventDefault();if(busy)return;try{const f=e.target;const t=Object.fromEntries(new FormData(f));t.amount=D.money(t.amount);if(t.amount===null)throw Error('Проверьте сумму платежа.');if(!D.dateValue(t.date))throw Error('Проверьте дату платежа.');if(packet.transactions.some(x=>x.id===t.id))throw Error('Платёж с таким номером уже есть.');if(packet.transactions.length>=300)throw Error('Можно добавить не больше 300 платежей.');packet.transactions.push(t);markDirty();renderPayments();f.reset();$('paymentError').textContent='';}catch(error){$('paymentError').textContent=error.message;}};
-    const oldImport=$('importFile').onchange;$('importFile').onchange=async e=>{if(busy)return;const previous=packet;await oldImport(e);if(packet!==previous){activeCase.recognition=packet.documents.filter(d=>d.review).map(d=>({...D.extractFields(d.sourceText||d.text),name:d.name,sourceText:d.sourceText||'',fields:d.review.fields||D.extractFields(d.text).fields,confirmed:!!d.review.confirmed,method:d.review.method||'text',pages:d.review.pages||1,confidence:d.review.confidence??null}));saveActiveCase();}renderRecognitions();renderPayments();};
+    const oldImport=$('importFile').onchange;$('importFile').onchange=async e=>{if(busy)return;const previous=packet;await oldImport(e);if(packet!==previous){activeCase.documentOrigins=Object.fromEntries(packet.documents.map(d=>[d.name,'import']));activeCase.recognition=packet.documents.filter(d=>d.review).map(d=>({...D.extractFields(d.sourceText||d.text),name:d.name,sourceText:d.sourceText||'',fields:d.review.fields||D.extractFields(d.text).fields,confirmed:!!d.review.confirmed,method:d.review.method||'text',pages:d.review.pages||1,confidence:d.review.confidence??null}));saveActiveCase();}renderRecognitions();renderPayments();};
     // A pending read is never allowed to finish into another account or case.
     window.addEventListener('pagehide',()=>{controller?.abort();D.stop().catch(()=>{});});
   }

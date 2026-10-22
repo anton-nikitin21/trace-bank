@@ -23,11 +23,11 @@ source=source.replace('<body><div id="trace-workspace">','<body data-auth-requir
 source=source.replace('</head>','<link rel="stylesheet" href="assets/auth.css"></head>')
 source=source.replace('<script src="assets/queue.js"></script>','<script src="assets/queue.js"></script><script src="assets/auth-config.js"></script><script src="assets/clerk-ru.js"></script><script src="assets/auth.js"></script>')
 for asset in ('auth-config.js','clerk-ru.js','auth.js','auth.css'):
-    version=hashlib.sha256((root/'website/assets'/asset).read_bytes()).hexdigest()[:12]
+    version=hashlib.sha256((root/'website/assets'/asset).read_text(encoding='utf-8').encode('utf-8')).hexdigest()[:12]
     source=source.replace(f'assets/{asset}"',f'assets/{asset}?v={version}"')
 source=re.sub(r'<script>if\(document\.modelContext\?\.registerTool\).*?</script>','',source,flags=re.S)
 for asset in ('queue.js','document-reader.js','document-review.js'):
-    version=hashlib.sha256((root/'website/assets'/asset).read_bytes()).hexdigest()[:12]
+    version=hashlib.sha256((root/'website/assets'/asset).read_text(encoding='utf-8').encode('utf-8')).hexdigest()[:12]
     pattern=rf'assets/{re.escape(asset)}(?:\?v=[^\"]*)?\"'
     source=re.sub(pattern,f'assets/{asset}?v={version}\"',source)
     demo=re.sub(pattern,f'assets/{asset}?v={version}\"',demo)

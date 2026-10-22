@@ -1,4 +1,4 @@
-import {mountLightFlow} from './light-flow.js?v=9';
+import {mountLightFlow} from './light-flow.js?v=perf1';
 
 const root=document.documentElement;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -54,7 +54,7 @@ function setupReveals(){
     while(title.firstChild)content.append(title.firstChild);
     title.append(content);
   });
-  observer=new IntersectionObserver(items=>{for(const item of items)if(item.isIntersecting){item.target.classList.add('is-visible');observer.unobserve(item.target);}},{threshold:.07,rootMargin:'0px 0px -25px 0px'});
+  observer=new IntersectionObserver(items=>{for(const item of items){if(item.isIntersecting)item.target.classList.add('is-visible');else if(item.intersectionRatio===0)item.target.classList.remove('is-visible');}},{threshold:[0,.07],rootMargin:'0px'});
   document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
   document.querySelectorAll('.proof-lines,.metric-strip,.comparison,.build-results').forEach(group=>[...group.children].forEach((el,i)=>el.style.setProperty('--reveal-delay',`${i*85}ms`)));
 }

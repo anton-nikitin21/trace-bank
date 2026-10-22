@@ -2,7 +2,7 @@
 
 Направление 3: собственная эффективность банка. Trace сопоставляет операции бизнес-клиента с документами, показывает пробелы по учебному профилю и помогает подготовить адресное уточнение. Решение остается за сотрудником.
 
-[Рабочее приложение](https://trace-bank-demo.tenderfield7.chatgpt.site/workspace.html) · [Главная](https://trace-bank-demo.tenderfield7.chatgpt.site/) · [Как работать командой](CONTRIBUTING.md)
+[Рабочее приложение](https://anton-nikitin21.github.io/trace-bank/workspace.html) · [Главная](https://anton-nikitin21.github.io/trace-bank/) · [Как работать командой](CONTRIBUTING.md)
 
 ## Быстрый запуск
 субо лох мне пох

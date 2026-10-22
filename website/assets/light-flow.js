@@ -6,7 +6,7 @@ export function mountLightFlow({host,hero,scope,reduced,requestFrame}) {
   const ctx=canvas.getContext('2d',{alpha:true});
   if(!ctx){field.remove();return {measure(){},update(){return false;},setPaused(){},destroy(){}};}
   const clamp=n=>Math.min(1,Math.max(0,n));
-  const colors=Array.from({length:32},(_,i)=>{const v=i/31;return `rgba(${Math.round(29+v*174)},${Math.round(119+v*120)},${Math.round(224+v*31)},${(.05+v*.90).toFixed(3)})`;});
+  const colors=Array.from({length:16},(_,i)=>{const v=i/15;return `rgba(${Math.round(29+v*174)},${Math.round(119+v*120)},${Math.round(224+v*31)},${(.05+v*.90).toFixed(3)})`;});
   let width=0,height=0,dpr=1,start=0,end=0,range=1,heroHeight=0,threads=[];
   let progress=0,seconds=0,paused=false,visible=true,destroyed=false,dirty=true,canObserve=false;
   let heroVisible=true,scopeVisible=false;
@@ -20,7 +20,7 @@ export function mountLightFlow({host,hero,scope,reduced,requestFrame}) {
     canObserve=true;visible=heroVisible||scopeVisible;syncPlayback();dirty=true;requestFrame();
   });
   observer.observe(hero);observer.observe(scope);
-  function sampleCurve(points,a,b,c,d,n=128){
+  function sampleCurve(points,a,b,c,d,n=64){
     for(let j=points.length?1:0;j<=n;j++){
       const t=j/n,u=1-t;
       points.push([u*u*u*a[0]+3*u*u*t*b[0]+3*u*t*t*c[0]+t*t*t*d[0],u*u*u*a[1]+3*u*u*t*b[1]+3*u*t*t*c[1]+t*t*t*d[1]]);
@@ -30,8 +30,8 @@ export function mountLightFlow({host,hero,scope,reduced,requestFrame}) {
     if(destroyed)return;
     const hostBox=host.getBoundingClientRect(),heroBox=hero.getBoundingClientRect(),scopeBox=scope.getBoundingClientRect();
     width=hostBox.width;height=innerHeight;heroHeight=heroBox.height;start=hostBox.top+scrollY;end=scopeBox.bottom+scrollY;range=Math.max(1,end-start-height);
-    const mobile=width<=600,n=mobile?6:12,bodyHeight=Math.max(600,end-start-heroHeight);
-    dpr=Math.min(devicePixelRatio||1,mobile?1.5:1.25);
+    const mobile=width<=600,n=mobile?5:9,bodyHeight=Math.max(600,end-start-heroHeight);
+    dpr=Math.min(devicePixelRatio||1,mobile?1:1);
     canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);canvas.style.width=`${width}px`;canvas.style.height=`${height}px`;field.style.height=`${height}px`;
     threads=[];
     for(let i=0;i<n;i++){
@@ -59,7 +59,7 @@ export function mountLightFlow({host,hero,scope,reduced,requestFrame}) {
     const shiftX=(Math.sin(p*Math.PI*2)*36-p*24)*(width<=600?.4:1),shiftY=-p*84;
     const angle=Math.sin(p*Math.PI)*.85*Math.PI/180,cos=Math.cos(angle),sin=Math.sin(angle);
     const anchorX=width*.65,anchorY=heroHeight*.25,worldY=start-scroll+shiftY;
-    const foundation=new Path2D(),halo=new Path2D(),buckets=Array.from({length:32},()=>new Path2D());
+    const foundation=new Path2D(),halo=new Path2D(),buckets=Array.from({length:16},()=>new Path2D());
     const worldHeight=end-start;
     for(const thread of threads){
       const head=(thread.phase+260*seconds/thread.duration)%260;
@@ -77,8 +77,8 @@ export function mountLightFlow({host,hero,scope,reduced,requestFrame}) {
                 if(lag<thread.tail){
                   // A short eased leading ramp and long nonlinear trailing decay.
                   const front=clamp(lag/4),strength=Math.pow(1-lag/thread.tail,1.7)*front*edge;
-                  const level=Math.min(31,Math.floor(strength*31));
-                  if(level>0){const bucket=buckets[level];if(previousLevel!==level)bucket.moveTo(px,py);bucket.lineTo(x,y);previousLevel=level;if(level>18){halo.moveTo(px,py);halo.lineTo(x,y);}}
+                  const level=Math.min(15,Math.floor(strength*15));
+                  if(level>0){const bucket=buckets[level];if(previousLevel!==level)bucket.moveTo(px,py);bucket.lineTo(x,y);previousLevel=level;if(level>9){halo.moveTo(px,py);halo.lineTo(x,y);}}
                   else previousLevel=-1;
                 }else previousLevel=-1;
               }
@@ -94,7 +94,7 @@ export function mountLightFlow({host,hero,scope,reduced,requestFrame}) {
     if(!still){
       // A single narrow halo pass, no shadowBlur, filters or full-page bitmaps.
       ctx.strokeStyle='rgba(64,175,255,.08)';ctx.lineWidth=7;ctx.stroke(halo);ctx.strokeStyle='rgba(114,205,255,.06)';ctx.lineWidth=3.5;ctx.stroke(halo);
-      for(let i=1;i<32;i++){ctx.strokeStyle=colors[i];ctx.lineWidth=1.05+i/31*.85;ctx.stroke(buckets[i]);}
+      for(let i=1;i<16;i++){ctx.strokeStyle=colors[i];ctx.lineWidth=1.05+i/15*.85;ctx.stroke(buckets[i]);}
     }
     ctx.restore();
     field.dataset.composition=[shiftX,shiftY,angle].map(n=>n.toFixed(5)).join('/');
@@ -107,7 +107,7 @@ export function mountLightFlow({host,hero,scope,reduced,requestFrame}) {
     const inside=scroll+height>start&&scroll<end;
     if(!canObserve)visible=inside;
     const running=!paused&&!reduced.matches&&visible&&inside;
-    if(running)seconds+=Math.min(dt,48)/1000;
+    if(running)seconds+=Math.min(dt,100)/1000;
     if(running||dirty||Math.abs(gap)>.00008)draw(scroll);
     dirty=false;field.dataset.progress=progress.toFixed(5);syncPlayback();
     return running||(!paused&&!reduced.matches&&visible&&Math.abs(target-progress)>.00008);

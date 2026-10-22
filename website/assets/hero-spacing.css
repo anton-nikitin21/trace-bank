@@ -1,0 +1,17 @@
+/* Footer participates in the grid and always follows the taller hero column. */
+.page-home .hero{height:auto;max-height:none;min-height:100svh;grid-template-rows:auto auto;padding-top:130px;padding-bottom:32px;row-gap:42px}
+.page-home .hero-bottom{position:relative;inset:auto;grid-column:1/-1;align-self:end;width:100%;padding-top:20px;border-top:1px solid #94b5e020;gap:22px;flex-wrap:wrap;animation:none}
+.page-home .hero-bottom .motion-toggle{margin-left:auto}
+@media(max-width:850px){.page-home .hero{padding-top:125px;padding-bottom:28px;row-gap:32px}}
+@media(max-width:600px){.page-home .hero{grid-template-rows:auto;min-height:0;padding-top:125px;row-gap:34px}.page-home .hero-bottom{grid-column:1;gap:14px;font-size:9px}.page-home .hero-bottom>a{max-width:190px}.page-home .hero-bottom .motion-toggle{font-size:10px;min-height:44px;max-width:none}.page-home .hero-bottom>span{display:none}}
+@media(prefers-reduced-motion:no-preference){
+ .page-home .copy-arrival{opacity:.45;translate:0 22px;transition:opacity 750ms cubic-bezier(.2,0,0,1),translate 750ms cubic-bezier(.2,0,0,1);transition-delay:var(--copy-delay,0ms)}
+ .page-home .copy-arrival.copy-arrived{opacity:1;translate:0 0}
+ .page-home .hero-copy .title-line{animation:trace-title-in 850ms cubic-bezier(.2,0,0,1) both;animation-delay:calc(var(--intro-delay,0ms) + 180ms)}
+ .page-home .hero-copy .title-line:nth-child(2){animation-delay:calc(var(--intro-delay,0ms) + 300ms)}
+ @keyframes trace-title-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+}
+.motion-paused .copy-arrival{opacity:1;translate:0 0;transition:none}
+@media(prefers-reduced-motion:reduce){.page-home .copy-arrival{opacity:1;translate:0 0}.page-home .hero-copy .title-line{animation:none}}
+
+@media(prefers-reduced-motion:no-preference){.page-home .hero-copy .title-line.copy-arrival{animation:none!important}.page-home .hero-copy .title-line.copy-arrival:not(.copy-arrived){opacity:.45;translate:0 22px}.page-home .hero-copy .title-line.copy-arrived{opacity:1;translate:0 0}}

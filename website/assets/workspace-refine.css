@@ -1,0 +1,106 @@
+/* Local employee workflow; uses the project's dark theme and spacing tokens. */
+html:has(#trace-workspace){scroll-behavior:auto}
+#trace-workspace{--control-border:#62778f;--surface-active:#12334c;--text-caption:#a6b9d1;font-family:var(--font-sans);font-size:.9375rem;line-height:1.6}
+#trace-workspace :is(h1,h2,h3){font-weight:600;line-height:1.3;text-wrap:balance}
+#trace-workspace .top h1{font-size:1.875rem;letter-spacing:-.02em;margin:0 0 8px}
+#trace-workspace .box h2{font-size:1.125rem}
+#trace-workspace .box h3{font-size:1rem}
+#trace-workspace .top p{max-width:66ch;color:var(--muted);font-size:.875rem;line-height:1.6}
+#trace-workspace .top{gap:var(--space-6);margin-bottom:var(--space-6);align-items:center}
+#trace-workspace :is(button,input,textarea,select){font-size:.875rem;line-height:1.5}
+#trace-workspace :is(input,textarea,select){border-color:var(--control-border);background:var(--surface)}
+#trace-workspace :is(input,textarea,select):focus-visible{outline:2px solid var(--accent);outline-offset:3px;box-shadow:none}
+#trace-workspace :is(p,.small,.muted){line-height:1.6;text-wrap:pretty}
+#trace-workspace .chip{font-size:.75rem;color:var(--muted)}
+#trace-workspace .shell-top{min-height:60px}
+#trace-workspace .top-path{font-size:.8125rem}
+#trace-workspace .side-caption{margin:var(--space-8) 12px var(--space-3);font-size:.75rem;color:var(--muted)}
+#trace-workspace .shell-side nav{gap:var(--space-1)}
+#trace-workspace .mobile-nav-toggle{display:none}
+#trace-workspace .shell-side nav button{font-size:.8125rem;min-height:44px;padding:12px;gap:10px;line-height:1.4}
+#trace-workspace .shell-side nav button svg{width:18px;height:18px;stroke-width:1.5}
+#trace-workspace .shell-side nav button.active{color:var(--accent);background:var(--surface-active);border-color:var(--control-border)}
+#trace-workspace .shell-side nav button.active:before{display:none}
+#trace-workspace .nav-section-label{margin:var(--space-6) 12px var(--space-2);color:var(--muted);font-size:.75rem}
+#trace-workspace .queue-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--space-3);background:none;border:0;padding:0;margin:0 0 var(--space-6)}
+#trace-workspace .queue-metric{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2);text-align:start;padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-caption);font-size:.8125rem;min-width:0}
+#trace-workspace .queue-metric strong{font-size:1.75rem;line-height:1.2;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+#trace-workspace .queue-metric[aria-pressed=true]{border-color:var(--accent);background:var(--surface-active);color:var(--accent)}
+#trace-workspace .queue-metric[aria-pressed=true] span:after{content:' · выбрано';font-size:.6875rem}
+#trace-workspace .queue-filters{margin:0 0 var(--space-2);gap:var(--space-4);grid-template-columns:minmax(0,2fr) minmax(200px,1fr)}
+#trace-workspace .queue-filters label{font-size:.8125rem;color:var(--text-caption)}
+#trace-workspace .queue-filters input,#trace-workspace .queue-filters select{margin-top:var(--space-2);min-height:46px}
+#trace-workspace .queue-results{display:flex;align-items:center;justify-content:space-between;min-height:44px;gap:var(--space-3);margin-bottom:var(--space-2);color:var(--muted);font-size:.8125rem}
+#trace-workspace #clearQueueFilters{min-height:36px;background:transparent;border:0;padding:6px 0;color:var(--accent);font-size:.8125rem;text-decoration:underline;text-underline-offset:4px}
+#trace-workspace .queue-table{padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface)}
+#trace-workspace .queue-table th{font-size:.75rem;color:var(--muted);padding:var(--space-4) var(--space-3)}
+#trace-workspace .queue-table td{padding:var(--space-4) var(--space-3);font-size:.875rem;line-height:1.5}
+#trace-workspace .queue-table td strong{font-weight:600;color:var(--ink)}
+#trace-workspace .queue-table .small{font-size:.75rem}
+#trace-workspace .queue-table button{background:transparent;border-color:var(--control-border);color:var(--ink);font-size:.8125rem}
+#trace-workspace .queue-status{font-size:.75rem;border-radius:6px;padding:5px 9px;line-height:1.5}
+#trace-workspace .queue-empty{padding:var(--space-8) var(--space-4);text-align:center}
+#trace-workspace .queue-empty strong{font-size:1rem}
+#trace-workspace .queue-empty p{margin:var(--space-2) 0 0;color:var(--muted)}
+#trace-workspace .storage-bar{font-size:.75rem;color:var(--muted);gap:var(--space-3);margin:var(--space-3) 0}
+#trace-workspace #resetDemo{background:transparent;border:0;color:var(--muted);padding:6px 0;min-height:36px;text-decoration:underline;text-underline-offset:4px;font-size:.75rem}
+#trace-workspace .demo-guide{margin:var(--space-4) 0 0;padding:var(--space-4);border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line)}
+#trace-workspace .demo-guide summary{font-size:.8125rem;font-weight:400;color:var(--text-caption)}
+#trace-workspace .demo-guide p{margin:var(--space-3) 0 0;max-width:70ch;font-size:.875rem}
+#trace-workspace .case-meta{margin:var(--space-4) 0 var(--space-6);gap:var(--space-4);font-size:.8125rem}
+#trace-workspace .case-meta strong{font-weight:400;color:var(--text-caption)}
+#trace-workspace .review-steps{margin:0 0 var(--space-6);gap:var(--space-2)}
+#trace-workspace .review-steps a{font-size:.8125rem;min-height:44px;display:flex;align-items:center;padding:10px 12px;color:var(--text-caption);border-color:var(--control-border);background:var(--surface)}
+#trace-workspace .upload-box>p{max-width:70ch;font-size:.875rem}
+#trace-workspace .upload-drop{padding:var(--space-4);border-color:var(--control-border)}
+#trace-workspace .upload-drop span{font-size:.8125rem;color:var(--muted)}
+#trace-workspace #uploadFiles{background:var(--surface-active);border-color:var(--control-border);color:var(--ink)}
+#trace-workspace .box{border-radius:var(--radius-md)}
+#trace-workspace .box-heading{gap:var(--space-4);flex-wrap:wrap}
+#trace-workspace :is(.overview .stat strong,.operation-amount,.case-meta,.queue-results){font-variant-numeric:tabular-nums}
+#trace-workspace :is(button,a,summary),#trace-workspace .queue-table tbody tr{transition:background-color 150ms,border-color 150ms,color 150ms}
+#trace-workspace :is(button,a,summary):not(:disabled):active{transform:none}
+#trace-workspace h1[tabindex='-1']:focus{outline:0}
+#trace-workspace dialog{overscroll-behavior:contain}
+#recognitionDialog,#newCaseDialog{overscroll-behavior:contain}
+:is(#recognitionDialog,#newCaseDialog) :is(input,select,textarea){border-color:#62778f;background:var(--surface);color:var(--ink)}
+:is(#recognitionDialog,#newCaseDialog) :is(input,select,textarea):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(hover:hover){
+ #trace-workspace .queue-metric:hover{border-color:var(--accent)}
+ #trace-workspace .queue-table button:hover,#trace-workspace #uploadFiles:hover{background:var(--surface-active);border-color:var(--accent)}
+}
+@media(max-width:1100px) and (min-width:761px){#trace-workspace .queue-summary{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){
+ #trace-workspace .top{align-items:flex-start;gap:var(--space-4);flex-wrap:wrap}
+ #trace-workspace .top h1{font-size:1.625rem}
+ #trace-workspace #newCaseButton{width:100%}
+ #trace-workspace :is(input,select,textarea){font-size:1rem}
+ :is(#recognitionDialog,#newCaseDialog) :is(input,select,textarea){font-size:1rem}
+ #trace-workspace .shell-side{flex-direction:row;align-items:center;flex-wrap:wrap;gap:var(--space-3);padding:var(--space-4)}
+ #trace-workspace .shell-side .brand{width:auto;min-height:44px;margin:0}
+ #trace-workspace .side-caption{display:none}
+ #trace-workspace .mobile-nav-toggle{display:block;margin-inline-start:auto;min-height:44px;border-color:var(--control-border);background:var(--surface);font-size:.8125rem}
+ #trace-workspace .mobile-nav-toggle[aria-expanded=true]{border-color:var(--accent)}
+ #trace-workspace .shell-side nav{display:none;width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+ #trace-workspace .shell-side nav.is-open{display:grid}
+ #trace-workspace .shell-side nav button{font-size:.8125rem;padding:10px;min-width:0;white-space:normal}
+ #trace-workspace .nav-section-label{grid-column:1/-1;margin:var(--space-3) 4px 0}
+ #trace-workspace .queue-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2);margin:var(--space-4) 0 var(--space-6)}
+ #trace-workspace .queue-metric{padding:14px;font-size:.75rem}
+ #trace-workspace .queue-metric:last-child{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between}
+ #trace-workspace .queue-metric strong{font-size:1.5rem}
+ #trace-workspace .queue-filters{grid-template-columns:1fr;gap:var(--space-4)}
+ #trace-workspace .queue-table{border:0;padding:0;background:transparent;overflow:visible}
+ #trace-workspace .queue-table table{display:block;min-width:0;width:100%}
+ #trace-workspace .queue-table thead{display:none}
+ #trace-workspace .queue-table tbody{display:grid;gap:var(--space-3)}
+ #trace-workspace .queue-table tr{display:block;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:var(--space-4)}
+ #trace-workspace .queue-table td{display:block;min-width:0;padding:var(--space-2) 0;border:0;overflow-wrap:anywhere}
+ #trace-workspace .queue-table td[data-label]:before{content:attr(data-label);display:block;font-size:.75rem;color:var(--muted);margin-bottom:3px}
+ #trace-workspace .queue-row-action button{width:100%;margin-top:var(--space-2);min-height:44px}
+ #trace-workspace .review-steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #trace-workspace .review-steps a{font-size:.75rem;overflow-wrap:anywhere}
+ #trace-workspace .queue-results{flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){#trace-workspace *,#trace-workspace *:before,#trace-workspace *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media(forced-colors:active){#trace-workspace :is(input,select,textarea,button){border-color:ButtonText}#trace-workspace .queue-metric[aria-pressed=true]{outline:2px solid Highlight}#trace-workspace :focus-visible{outline-color:Highlight}}

@@ -1,0 +1,69 @@
+/* Trace homepage visual system: one family, role-based scale, shared surfaces. */
+@font-face{font-family:Manrope;src:url('fonts/Manrope-variable.ttf') format('truetype');font-weight:200 800;font-style:normal;font-display:swap}
+body.page-home{--font-sans:Manrope,Arial,sans-serif;--trace-font:Manrope,Arial,sans-serif;--font-serif:Manrope,Arial,sans-serif;--type-display:clamp(2.65rem,5.1vw,5rem);--type-section:clamp(2.1rem,3.6vw,3.5rem);--type-title:clamp(1.65rem,2.6vw,2.35rem);--type-body:1rem;--type-caption:.75rem;--radius-card:16px;--radius-control:10px;--section-gap:clamp(72px,8vw,120px);font-family:var(--font-sans);font-size:16px;line-height:1.65;font-weight:400}
+.page-home :is(button,input,select,textarea){font-family:var(--font-sans)}
+.page-home :is(h1,h2,h3,h4){font-family:var(--font-sans);font-weight:600;text-wrap:balance;letter-spacing:-.025em}
+.page-home :is(h1,h2,h3) em{font-family:var(--font-sans);font-style:normal;font-weight:500;letter-spacing:inherit;color:#8bd8ff}
+.page-home .hero h1{font-size:var(--type-display);line-height:1.13;font-weight:600;letter-spacing:-.035em;margin-block:28px}
+.page-home .hero h1 em{font-weight:500}
+.page-home :is(.display,.proof-layout>.display,.closing h2){font-size:var(--type-section);line-height:1.2;font-weight:600;letter-spacing:-.025em}
+.page-home .connection-intro h2{font-family:var(--font-sans);font-size:var(--type-section);line-height:1.2;font-weight:600;letter-spacing:-.025em}
+.page-home .chapter-copy h3{font-size:var(--type-title);line-height:1.25;font-weight:600;letter-spacing:-.02em;margin:20px 0 18px}
+.page-home .proof-lines h3{font-size:1.375rem;line-height:1.4;font-weight:600;letter-spacing:-.015em}
+.page-home :is(.hero-description,.statement-body,.chapter-copy p,.value-head>p){font-family:var(--font-sans);font-size:var(--type-body);line-height:1.8;color:#afbed1;letter-spacing:0;text-wrap:pretty;max-width:62ch}
+.page-home .chapter-copy p{max-width:42ch}
+.page-home :is(.eyebrow,.hero .eyebrow,.hero-copy .eyebrow,.step-num,.proof-status,.small-note){font-family:var(--font-sans);font-size:var(--type-caption);line-height:1.6;font-weight:500;letter-spacing:.045em}
+.page-home .hero-copy .eyebrow{padding:7px 10px;border-radius:6px;letter-spacing:.035em}
+.page-home :is(.hero-caption,.hero-bottom,.motion-toggle,.section-action>span){font-family:var(--font-sans);font-size:var(--type-caption);line-height:1.7;color:#9eafc5;letter-spacing:0}
+.page-home .header nav{font-family:var(--font-sans);font-size:.8125rem;font-weight:500;gap:28px}
+.page-home .button{font-family:var(--font-sans);font-size:.875rem;font-weight:600;line-height:1.5;border-radius:var(--radius-control);min-height:48px;padding:13px 20px;gap:12px}
+.page-home .button-small{font-size:.8125rem;min-height:44px;padding:11px 17px}
+.page-home .text-link{font-family:var(--font-sans);font-size:.8125rem;line-height:1.6;font-weight:500}
+.page-home .section{padding-block:var(--section-gap)}
+.page-home .section-top{margin-bottom:40px;gap:24px}
+.page-home .scenario-row{padding-block:52px;border-color:#94b5e025}
+.page-home .preview-panel{border-radius:var(--radius-card);padding:24px;background:linear-gradient(145deg,#102034,#081426);border-color:#94b5e035}
+.page-home .preview-heading h2{font-family:var(--font-sans);font-size:1.375rem;font-weight:600;line-height:1.3;letter-spacing:-.02em}
+.page-home :is(.preview-node,.match-pair>div){border-radius:var(--radius-control);border-color:#94b5e02b}
+.page-home .preview-tabs{border-radius:var(--radius-control);padding:4px;gap:4px}
+.page-home .preview-tabs button{font-family:var(--font-sans);font-size:.75rem;line-height:1.5;font-weight:500;border-radius:7px;padding:10px 14px;min-height:40px}
+.page-home :is(.preview-brand,.micro-label,.preview-live,.preview-foot){font-size:.6875rem;line-height:1.6}
+.page-home .preview-node strong{font-family:var(--font-sans);font-size:.9375rem;line-height:1.4;font-weight:600}
+.page-home .preview-open{font-family:var(--font-sans);font-size:.8125rem;font-weight:500;min-height:44px}
+.page-home :is(.match-scene,.message-scene,.material-list>a){border-radius:var(--radius-card)}
+.page-home .material-list>a{padding:24px;border:1px solid #94b5e028;background-color:#0a1728}
+.page-home .material-list{gap:16px}
+.page-home .material-art{border-radius:10px;background-color:#0e2033}
+.page-home .material-list>a>span{font-family:var(--font-sans);font-size:1.0625rem;line-height:1.45;font-weight:600;letter-spacing:-.01em}
+.page-home .material-list>a>small{font-family:var(--font-sans);font-size:.8125rem;line-height:1.7;color:#9eafc5}
+.page-home .metric-strip strong{font-family:var(--font-sans);font-size:clamp(3rem,5vw,4.75rem);line-height:1.1;letter-spacing:-.04em;font-weight:500;font-variant-numeric:tabular-nums}
+.page-home .metric-strip p,.page-home .proof-lines p{font-family:var(--font-sans);font-size:.875rem;line-height:1.8;color:#a7b8cc}
+.page-home .closing{min-height:390px}.page-home .closing h2{margin:32px 0}
+.page-home .team-footer{font-family:var(--font-sans);padding-top:64px}
+.page-home .team-footer h2{font-family:var(--font-sans);font-size:.875rem;font-weight:600;margin-bottom:20px}
+.page-home .team-footer :is(p,a){font-family:var(--font-sans);font-size:.8125rem;line-height:1.8}
+.page-home .team-footer-identity strong{font-size:.9375rem;font-weight:600}
+.page-home .team-footer-identity div>span{font-size:.75rem}
+.page-home .team-footer-mascot{background:#fff;border-radius:var(--radius-control)}
+.page-home .team-footer-bottom{font-size:.75rem}.page-home .team-footer-bottom :is(p,a){font-size:.75rem}
+@media(max-width:850px){.page-home .hero{column-gap:30px}.page-home .hero h1{font-size:clamp(2.6rem,5.3vw,4rem)}.page-home .material-list>a{padding:20px}}
+@media(max-width:600px){
+ body.page-home{--type-display:clamp(2.5rem,10.5vw,3.3rem);--type-section:clamp(1.9rem,8vw,2.6rem);--type-title:1.75rem;--type-body:.9375rem;--type-caption:.6875rem}
+ .page-home .hero h1{font-size:var(--type-display);line-height:1.16;letter-spacing:-.03em}
+ .page-home .hero-copy .eyebrow{font-size:.625rem;letter-spacing:.025em}
+ .page-home .hero-actions .button{font-size:.8125rem;padding:12px 15px}
+ .page-home .header>.button{font-size:.6875rem;padding:10px 12px}
+ .page-home .header{gap:10px}
+ .page-home .section-top{margin-bottom:28px;gap:16px}
+ .page-home .preview-panel{padding:20px}
+ .page-home .preview-heading h2{font-size:1.25rem}
+ .page-home .preview-node strong{font-size:.875rem}
+ .page-home .preview-live{font-size:.625rem}
+ .page-home .material-list{gap:10px}
+ .page-home .material-list>a{padding:14px}
+ .page-home .material-list>a>span{font-size:.9375rem}
+ .page-home .material-list>a>small{font-size:.75rem}
+ .page-home .material-art{height:150px}
+ .page-home .team-footer a{font-size:.8125rem}
+ .page-home .scenario-row{padding-block:36px}
+}

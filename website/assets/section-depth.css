@@ -1,0 +1,27 @@
+/* Additive perspective: original chapter-art and paper transforms are untouched. */
+.depth-shell{position:relative;min-width:0;perspective:1100px;isolation:isolate;--depth-progress:.5;--depth-turn:0deg;--depth-lean:0deg}
+.depth-shell .chapter-art{position:relative;z-index:2;transform-style:preserve-3d;transform:rotateX(calc(7deg - var(--depth-progress)*6deg + var(--depth-lean))) rotateY(calc(-9deg + var(--depth-progress)*8deg + var(--depth-turn)));transform-origin:center}
+.depth-plate{pointer-events:none;position:absolute;inset:12px;border:1px solid #8bd8ff24;border-radius:18px;background:linear-gradient(135deg,#8bd8ff05,transparent 60%);z-index:0;transform:translate3d(8px,calc(12px + (1 - var(--depth-progress))*12px),-20px) rotateY(-5deg);box-shadow:0 18px 35px #0002}
+.depth-plate-2{inset:22px;opacity:.45;transform:translate3d(16px,calc(24px + (1 - var(--depth-progress))*16px),-40px) rotateY(-5deg)}
+.depth-shell .depth-lift{position:relative;transform-style:preserve-3d;transform:translate3d(0,calc((.5 - var(--depth-progress))*14px),calc(12px + var(--layer)*5px))}
+.depth-shell .document-scene{filter:drop-shadow(0 18px 20px #0002)}
+.depth-shell .document-scene:after{content:'';position:absolute;inset:20% 10% 15%;border:1px solid #8bd8ff16;border-radius:50%;transform:rotateX(65deg) translateZ(-35px);pointer-events:none;z-index:-1}
+.depth-scene-1{transform:translateY(calc((.5 - var(--depth-progress))*12px))}
+.depth-scene-2 .depth-lift:has(>.match-pair){transform:translateZ(calc(12px + var(--depth-progress)*18px))}
+.depth-scene-2 .depth-lift:has(>.difference){transform:translate3d(0,calc((1 - var(--depth-progress))*18px),35px);opacity:calc(.7 + var(--depth-progress)*.3)}
+.depth-scene-3 .depth-lift:has(>p){transform:translate3d(0,calc((.5 - var(--depth-progress))*10px),30px)}
+.depth-scene-3 .depth-lift:has(>.issue-transition){transform:translateZ(40px)}
+@media(max-width:850px){.depth-shell .chapter-art{width:100%}.depth-shell{margin-bottom:16px}}
+@media(max-width:600px){.depth-shell .chapter-art{transform:rotateX(2deg) rotateY(-3deg)}.depth-plate{inset:10px}.depth-plate-2{inset:16px}.depth-shell .depth-lift{transform:translateZ(10px)}}
+@media(prefers-reduced-motion:reduce){.depth-shell,.depth-shell .chapter-art,.depth-shell .depth-lift{transform:none!important}.depth-plate{display:none}}
+.motion-paused .depth-shell,.motion-paused .depth-shell .chapter-art,.motion-paused .depth-shell .depth-lift{transform:none!important}
+
+/* Leave room for the original lateral parallax and its new depth plates. */
+.refined-home .scenario-row:has(.depth-shell){overflow:visible}
+.depth-scene-1 .depth-plate-1{transform:translate3d(calc((1 - var(--depth-progress))*-20px),calc(12px + (1 - var(--depth-progress))*18px),-20px) rotateZ(calc((1 - var(--depth-progress))*-5deg))}
+.depth-scene-1 .depth-plate-2{transform:translate3d(calc((1 - var(--depth-progress))*24px),calc(24px + (1 - var(--depth-progress))*26px),-40px) rotateZ(calc((1 - var(--depth-progress))*6deg))}
+.depth-scene-2 .depth-plate-1{transform:translateX(calc((1 - var(--depth-progress))*-24px)) rotateY(calc((1 - var(--depth-progress))*-12deg))}
+.depth-scene-2 .depth-plate-2{transform:translateX(calc((1 - var(--depth-progress))*24px)) rotateY(calc((1 - var(--depth-progress))*12deg))}
+.depth-scene-3 .depth-plate-1{transform-origin:bottom;transform:translateY(12px) rotateX(calc((1 - var(--depth-progress))*16deg))}
+.depth-scene-3 .depth-plate-2{transform-origin:bottom;transform:translateY(24px) rotateX(calc((1 - var(--depth-progress))*24deg))}
+@media(max-width:600px){.refined-home .scenario-row:has(.depth-shell){overflow:clip}.depth-shell{margin-inline:8px}.depth-plate{box-shadow:none}}

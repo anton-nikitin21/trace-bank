@@ -55,6 +55,10 @@ function showQueueView(id) {
   $('currentView').textContent = ({learn:'Как пользоваться',queue:'Обращения клиентов',case:'Проверка документов'})[id] || 'Рабочее пространство';
   document.querySelector('.demo-guide').hidden = id !== 'queue';
   if (id === 'queue') renderQueue();
+  const title=({learn:'Как пользоваться',queue:'Обращения клиентов',case:'Проверка документов'})[id];
+  if(title) document.title=title+' — Trace';
+  const heading=document.querySelector('#'+id+' h1');
+  if(heading && document.activeElement?.closest('button,a')){heading.tabIndex=-1;heading.focus({preventScroll:true});}
   window.scrollTo({top:0,behavior:'auto'});
 }
 
@@ -68,13 +72,24 @@ function saveActiveCase() {
   persistDemo();
 }
 
+const queuePluralRules=new Intl.PluralRules('ru');
+function formatQueueCount(count,one,few,many){return new Intl.NumberFormat('ru-RU').format(count)+' '+({one,few,many,other:many})[queuePluralRules.select(count)];}
 function renderQueue() {
   const query = $('queueSearch').value.toLocaleLowerCase('ru');
   const filter = $('queueFilter').value;
   const filtered = caseQueue.filter(item => (!filter || item.status === filter) &&
     `${item.packet.case_id} ${item.packet.customer}`.toLocaleLowerCase('ru').includes(query));
-  $('queueCounts').textContent = `Всего: ${caseQueue.length} · Новые: ${caseQueue.filter(x=>x.status==='new').length} · Ожидают уточнения: ${caseQueue.filter(x=>x.status==='waiting').length}`;
-  $('queueRows').innerHTML = filtered.map(item => `<tr><td><strong>${escape(item.packet.case_id)}</strong><br><span class="small muted">${escape(item.received)}</span></td><td><strong>${escape(item.packet.customer)}</strong><br><span class="small muted">Поставка товаров</span></td><td>${item.packet.transactions.length} платежей<br><span class="small muted">${item.packet.documents.length} документов</span></td><td><span class="queue-status ${item.status}">${workflowNames[item.status]}</span></td><td><button data-open-case="${escape(item.packet.case_id)}">Открыть обращение</button></td></tr>`).join('') || '<tr><td colspan="5">Обращения не найдены. Измените поиск или статус.</td></tr>';
+  const counters=[['','Все обращения',caseQueue.length],['new','Новые',caseQueue.filter(x=>x.status==='new').length],['review','На проверке',caseQueue.filter(x=>x.status==='review').length],['waiting','Ждут уточнения',caseQueue.filter(x=>x.status==='waiting').length],['done','Завершены',caseQueue.filter(x=>x.status==='done').length]];
+  if(!$('queueCounts').children.length) $('queueCounts').innerHTML=counters.map(([value,label])=>`<button type="button" class="queue-metric" data-queue-status="${value}"><span>${label}</span><strong></strong></button>`).join('');
+  document.querySelectorAll('[data-queue-status]').forEach((button,index)=>{
+    button.setAttribute('aria-pressed',String(filter===button.dataset.queueStatus));
+    button.querySelector('strong').textContent=counters[index][2];
+    button.onclick=()=>{$('queueFilter').value=button.dataset.queueStatus;renderQueue();};
+  });
+  $('queueResultCount').textContent=`Показано ${filtered.length} из ${caseQueue.length}`;
+  $('clearQueueFilters').hidden=!query && !filter;
+  $('clearQueueFilters').onclick=()=>{$('queueSearch').value='';$('queueFilter').value='';renderQueue();$('queueSearch').focus();};
+  $('queueRows').innerHTML = filtered.map(item => `<tr><td data-label="Обращение"><strong>${escape(item.packet.case_id)}</strong><br><span class="small muted">${escape(item.received)}</span></td><td data-label="Клиент"><strong>${escape(item.packet.customer)}</strong><br><span class="small muted">Поставка товаров</span></td><td data-label="Комплект">${formatQueueCount(item.packet.transactions.length,'платёж','платежа','платежей')}<br><span class="small muted">${formatQueueCount(item.packet.documents.length,'документ','документа','документов')}</span></td><td data-label="Статус"><span class="queue-status ${item.status}">${workflowNames[item.status]}</span></td><td class="queue-row-action"><button aria-label="Открыть обращение ${escape(item.packet.case_id)}" data-open-case="${escape(item.packet.case_id)}">Открыть обращение</button></td></tr>`).join('') || '<tr><td colspan="5"><div class="queue-empty"><strong>Обращения не найдены</strong><p>Измените запрос или нажмите «Сбросить фильтры» над списком.</p></div></td></tr>';
   document.querySelectorAll('[data-open-case]').forEach(button => button.onclick = () => openQueueCase(button.dataset.openCase));
 }
 
@@ -147,6 +162,12 @@ async function initializeQueue() {
   for (const id of ['draft','reviewComment']) $(id).addEventListener('input',saveActiveCase);
   window.addEventListener('pagehide',saveActiveCase);
   $('queueSearch').oninput = renderQueue; $('queueFilter').onchange = renderQueue;
+  const mobileNav=$('workspaceNav'),mobileNavToggle=$('mobileNavToggle');
+  const closeMobileNav=()=>{mobileNav.classList.remove('is-open');mobileNavToggle.setAttribute('aria-expanded','false');};
+  mobileNavToggle.onclick=()=>{const open=mobileNavToggle.getAttribute('aria-expanded')!=='true';mobileNavToggle.setAttribute('aria-expanded',String(open));mobileNav.classList.toggle('is-open',open);};
+  mobileNav.addEventListener('click',event=>{if(event.target.closest('[data-tab]'))closeMobileNav();});
+  mobileNav.addEventListener('keydown',event=>{if(event.key==='Escape'&&mobileNav.classList.contains('is-open')){closeMobileNav();mobileNavToggle.focus();}});
+
   $('backToQueue').onclick = () => showQueueView('queue');
   document.querySelector('[data-tab="queue"]').onclick = () => showQueueView('queue');
   document.querySelector('[data-tab="case"]').onclick = () => {

@@ -4,9 +4,9 @@
 
 [Рабочее приложение](https://anton-nikitin21.github.io/trace-bank/workspace.html) · [Главная](https://anton-nikitin21.github.io/trace-bank/) · [Как работать командой](CONTRIBUTING.md)
 
+Актуальный комплект первого спринта от 27 октября: [презентация](https://disk.yandex.ru/i/5XcLTdpuOXySAw), [аналитика и модель](https://disk.yandex.ru/d/rMZ59lG4ihjLag). Состав команды: Франчук Тимофей Сергеевич, Криницкий Сергей Сергеевич, Никитин Антон Павлович. Текст заявки: [SPRINT1-SUBMISSION.md](SPRINT1-SUBMISSION.md).
+
 ## Быстрый запуск
-субо лох мне пох
-fdfdfd
 Нужны Python 3.10+ и Node.js 22+ для проверок. Сайт не требует установки npm-пакетов.
 
 ```sh
@@ -71,7 +71,7 @@ python server.py
 
 OCR произвольных сканов, подлинность и достаточность для банковского решения не проверяются. Экономия времени пока является гипотезой пилота. Текущая библиотека Three.js включена с ее MIT-лицензией в website/assets/vendor/THREE-LICENSE.txt.
 
-Шаблон рабочего кабинета: `templates/workspace.html`. Он хранится вне публикуемой папки; `scripts/build_workspace.py` собирает из него страницу с обязательным входом Clerk. Старый адрес `demo.html` перенаправляет на вход.
+Шаблон рабочего кабинета: `templates/workspace.html`. Он хранится вне публикуемой папки; `scripts/build_workspace.py` собирает из него страницу с обязательным входом Clerk. Адрес `demo.html` открывает отдельную учебную демонстрацию без регистрации.
 
 ### Общедоступная демонстрация
 

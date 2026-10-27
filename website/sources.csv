@@ -1,0 +1,7 @@
+﻿ID,Источник,URL,Подтверждает и ограничения
+S1,Академия Финтеха — официальный бриф,https://fintechacademy.ru/task-1,"Направление 3, сроки спринтов, требования к сдаче. Проверено 27.10.2026."
+S3,1С:Сверка 2.0 — описание производителя,https://v8.1c.ru/its/services/1c-sverka/,Сверка первичных и банковских документов; не доказательство преимущества Trace. Проверено 27.10.2026.
+S4,Directum Ario One 1.2 — статья 20.10.2021,https://club.directum.ru/post/345788,Историческое подтверждение проверки состава комплектов. Не актуальная комплектация продукта. Проверено 27.10.2026.
+S5,Smart Document Engine 3.6 — статья 19.10.2026,https://smartengines.ru/news/bezoblachnaya-pogoda-na-sklade-smart-document-engine-3-6-raspoznaet-pervichnye-dokumenty-bez-interneta-i-infrastrukturnoj-zavisimosti/,Производитель описывает локальное извлечение реквизитов; не независимый тест. Проверено 27.10.2026.
+S6,Trace — исходный код main 6ca8586,https://github.com/anton-nikitin21/trace-bank/tree/6ca858670551897aa1de8b88e1e5f22f054526f3,"Функции и ограничения, опубликованные синтетические отчёты. Проверено 27.10.2026."
+S8,Trace — опубликованный сайт,https://anton-nikitin21.github.io/trace-bank/,"Рабочий интерфейс, цели, запланированное интервью 5 ноября. Проверено 27.10.2026."

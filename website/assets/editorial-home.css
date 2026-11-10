@@ -752,5 +752,9 @@
 }
 @media (max-width:600px) {
   .page-home .graph-node { overflow-wrap: anywhere; }
+  .page-home .graph-node span { font-size: .5625rem; }
+  .page-home .graph-node small { font-size: .625rem; }
+  .page-home .preview-log-row { font-size: .6875rem; }
+  .page-home .preview-log-row :is(strong,.log-state) { font-size: .6875rem; }
   .page-home .preview-tabs button { min-height: 44px; }
 }

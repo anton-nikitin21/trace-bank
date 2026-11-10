@@ -112,10 +112,15 @@ def analyze(packet):
         by_hash[d["sha256"]] = d["name"]
     for t in packet["transactions"]:
         groups[(t["contract"], t["inn"])].append(t)
+    counterparties = defaultdict(set)
+    for contract, inn in groups:
+        counterparties[contract].add(inn)
     rows = []
     for (contract, inn), txs in groups.items():
         start = len(issues)
-        related = [d for d in docs if d["fields"].get("contract") == contract and d["name"] not in duplicate_names]
+        related = [d for d in docs if d["fields"].get("contract") == contract
+                   and d["name"] not in duplicate_names
+                   and (len(counterparties[contract]) == 1 or d["fields"].get("inn") == inn)]
         correct = [d for d in related if d["fields"].get("inn") == inn and not d["errors"]]
         for d in related:
             if d["fields"].get("inn") != inn:
@@ -133,26 +138,39 @@ def analyze(packet):
             if not primary:
                 issue("MISSING_PRIMARY", "Не найден акт или УПД", f"По договору {contract} для заявленного полного расчёта нужен акт или УПД с ИНН {inn}.", contract)
             else:
+                by_number = defaultdict(list)
+                for d in primary:
+                    kind = d["anchors"]["kind"]["quote"].split(":", 1)[1].strip().lower()
+                    by_number[(kind, d["fields"]["number"])].append(d)
+                conflicts = [d["anchors"]["number"] for matches in by_number.values()
+                             if len(matches) > 1 for d in matches]
+                if conflicts:
+                    issue("AMBIGUOUS_PRIMARY", "Несколько версий акта или УПД",
+                          f"По договору {contract} найдено несколько версий первичного документа с одним номером. Уточните действующую версию перед сверкой суммы.",
+                          contract, conflicts)
                 amounts = [d["fields"]["amount_cents"] for d in primary]
                 paid = sum(money(t["amount"]) for t in txs)
                 total = sum(amounts)
-                if total != paid:
+                if not conflicts and total != paid:
                     issue("AMOUNT", "Нужно пояснить разницу сумм", f"По {contract}: операции {paid / 100:,.2f} ₽; акты/УПД {total / 100:,.2f} ₽. Разница {abs(total-paid) / 100:,.2f} ₽. Это запрос пояснения, а не вывод о нарушении.", contract, [d["anchors"]["amount"] for d in primary], f"По договору {contract} поясните разницу {abs(total-paid)/100:,.2f} ₽ между суммой операций и актов/УПД либо дополните комплект.")
-        elif not primary:
-            # Supply-v1 explicitly accepts advance payments without delivery documents.
-            pass
+        for finding in issues[start:]:
+            finding["inn"] = inn
         rows.append({"contract": contract, "inn": inn, "counterparty": txs[0]["counterparty"], "transaction_ids": [t["id"] for t in txs],
                      "amount": sum(money(t["amount"]) for t in txs) / 100, "settlement": "full" if full else "advance_or_mixed",
                      "documents": [d["name"] for d in related], "issue_count": len(issues)-start,
                      "status": "needs_review" if len(issues)>start else "complete"})
-    requested = {k[0] for k in groups}
     for d in docs:
-        if d["fields"].get("contract") not in requested:
+        contract, inn = d["fields"].get("contract"), d["fields"].get("inn")
+        if contract not in counterparties:
             issue("UNLINKED", "Документ не связан с запросом", d["name"] + " не удалось связать с запрошенными договорами.", evidence=[{"file": d["name"], "line": 1, "quote": "Связь с запрошенной операцией не подтверждена"}])
+        elif d["name"] not in duplicate_names and len(counterparties[contract]) > 1 and inn not in counterparties[contract]:
+            issue("INN", "Не удалось связать документ с контрагентом",
+                  f"По договору {contract} есть несколько контрагентов. ИНН документа {d['name']} не совпадает ни с одной операцией.",
+                  contract, [d["anchors"].get("inn", {"file": d["name"], "line": 1, "quote": "ИНН не извлечён"})])
     # Global extraction/duplicate issues keep the entire packet under human review.
     actions = list(dict.fromkeys(i["action"] for i in issues))
     draft = (f"Коллеги, мы проверили комплект по обращению {packet['case_id']}.\n\nДля продолжения рассмотрения просим уточнить:\n" + "\n".join(f"{n}. {a}" for n, a in enumerate(actions, 1)) + "\n\nПросим дополнить текущий комплект. Повторно отправлять остальные документы не требуется. После получения уточнений сотрудник банка продолжит рассмотрение.") if actions else f"Комплект по обращению {packet['case_id']} соответствует выбранному профилю supply-v1. Сотрудник должен проверить содержание, подлинность и достаточность документов для конкретного процесса."
-    return {"version": VERSION, "profile": PROFILE, "case_id": packet["case_id"], "customer": packet["customer"], "rows": rows, "issues": issues, "documents": docs, "draft": draft,
+    return {"version": VERSION, "profile": PROFILE, "profile_version": "supply-v1.1", "case_id": packet["case_id"], "customer": packet["customer"], "rows": rows, "issues": issues, "documents": docs, "draft": draft,
             "state": "needs_review" if issues else "complete", "issue_count": len(issues), "transaction_count": len(packet["transactions"]), "document_count": len(docs),
             "scope": "Проверка комплектности по демонстрационному профилю. Решение по операции принимает сотрудник банка. Подписи и подлинность не проверены."}
 

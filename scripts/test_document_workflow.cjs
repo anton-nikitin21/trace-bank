@@ -22,6 +22,9 @@ document.querySelector('[data-tab="model"]').onclick();assert.equal(el('model').
  assert.equal(cameraPickerOpened,true);
  el('cameraFile').onchange({target:{files:[],value:''}});
  assert.equal(run('packet.documents.length'),5);
+ assert.match(el('requirementGroups').textContent,/SUP-01.*Подтверждено по профилю/);
+ assert.match(el('requirementGroups').textContent,/SUP-03.*Расхождение/);
+ assert.match(el('revisionComparison').textContent,/замечаний/);
  const uploadText='Тип: УПД\nНомер: УПД-44\nДоговор: Д-44\nИНН контрагента: 7700000004\nДата: 2026-09-20\nСумма: 1000';
  // Real upload entry point and real TXT extraction, no mocked success report.
  el('documentFiles').onchange({target:{files:[new File([uploadText],'new.txt',{type:'text/plain'})],value:''}});
@@ -35,5 +38,10 @@ document.querySelector('[data-tab="model"]').onclick();assert.equal(el('model').
  el('newCustomer').value='ООО Свой клиент';el('newCaseForm').onsubmit({preventDefault(){}});assert.equal(run('caseQueue.length'),4);assert.equal(run('packet.documents.length'),0);assert.equal(run('packet.transactions.length'),0);await run('check()');assert.match(el('toast').textContent,/платёж/);
  const form=el('paymentForm');const values={id:'П-1',counterparty:'ООО Поставщик',inn:'7700000004',contract:'Д-44',amount:'2000',date:'2026-09-20',settlement:'full'};for(const [k,v]of Object.entries(values))form.querySelector(`[name="${k}"]`).value=v;
  form.onsubmit({preventDefault(){},target:form});assert.equal(run('packet.transactions.length'),1);assert.equal(run('packet.transactions[0].amount'),'2000.00');assert.equal(JSON.parse([...store.values()][0]).cases.length,4);
+ const csv='id;counterparty;inn;contract;date;amount;settlement\nП-CSV;ООО Маяк;7700000004;Д-44;2026-09-20;3000,00;full';
+ await el('paymentsCSVFile').onchange({target:{files:[new File([csv],'payments.csv')],value:''}});
+ assert.equal(run('packet.transactions[0].id'),'П-CSV');
+ await el('paymentsCSVFile').onchange({target:{files:[new File(['ошибка'],'invalid.csv')],value:''}});
+ assert.equal(run('packet.transactions[0].id'),'П-CSV');
  console.log('PASS: real template/queue bootstrap; initial checks; file input to TXT extraction; pending-field guard; manual confirmation and source provenance; cancelling edits; new case; payment entry; four-case persistence.');
 })().catch(error=>{console.error(error);process.exitCode=1});

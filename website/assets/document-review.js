@@ -12,10 +12,11 @@
   function showUploadMessage(text){$('uploadState').textContent=text;}
   function setBusy(value){
     busy=value;
-    for(const id of ['uploadFiles','captureDocument','addDoc','analyze','importBtn','loadDemo','loadFixed','backToQueue','newCaseButton','resetDemo','prepareRequest','approve','deleteDoc','copyDraft','export','reviewDocument']){
+    for(const id of ['uploadFiles','captureDocument','importPaymentsCSV','addDoc','analyze','importBtn','loadDemo','loadFixed','backToQueue','newCaseButton','resetDemo','prepareRequest','approve','deleteDoc','copyDraft','export','reviewDocument']){
       const n=$(id);if(n){if(value){n.dataset.beforeUploadDisabled=String(n.disabled);n.disabled=true}else if(n.dataset.beforeUploadDisabled!==undefined){n.disabled=n.dataset.beforeUploadDisabled==='true';delete n.dataset.beforeUploadDisabled;}}
     }
     document.querySelectorAll('.shell-side nav button').forEach(b=>b.disabled=value);
+    $('forcePDFScan').disabled=value;
     $('cancelUpload').hidden=!value;$('uploadDrop').classList.toggle('processing',value);
     if(!value)refreshGuards();
   }
@@ -62,12 +63,14 @@
   }
   function renderRecognitions(){
     syncDocumentSummary();
+    renderRequirements();renderRevisionComparison();
     $('recognitionList').replaceChildren();
     for(const item of records()){
       const card=node('article',undefined,'recognition-card');const heading=node('div',undefined,'recognition-heading');heading.append(node('strong',item.name));
       const status=item.error?'Не удалось прочитать':item.processing?'Обработка':item.confirmed?'Поля подтверждены':'Нужно проверить поля';heading.append(node('span',status,'recognition-status'+(item.confirmed?' confirmed':'')));card.append(heading);
       if(item.error)card.append(node('p',item.error,'err'));
-      else if(!item.processing){
+      for(const warning of item.warnings||[])card.append(node('p',warning,'small warning'));
+      if(!item.error&&!item.processing){
         appendFieldSummary(card,item);
         const missing=Object.keys(D.validate(item.fields||{})).map(k=>D.FIELD_LABELS[k]);const ambiguous=Object.keys(item.states||{}).filter(k=>item.states[k]==='ambiguous').map(k=>D.FIELD_LABELS[k]);
         if(missing.length)card.append(node('p','Не хватает данных для проверки: '+missing.join(', ')+'.','small'));
@@ -88,7 +91,7 @@
   async function upload(files,{fromCamera=false}={}){
     if(busy||!activeCase)return;
     const batch=Array.from(files);if(!batch.length)return;if(batch.length>D.LIMITS.batch){toast('Выберите не больше 10 файлов за один раз.');return;}
-    const target=activeCase;controller=new AbortController();setBusy(true);let loaded=0;const failures=[];
+    const target=activeCase,forceOCR=$('forcePDFScan').checked;controller=new AbortController();setBusy(true);let loaded=0;const failures=[];
     try{
       for(let i=0;i<batch.length;i++){
         if(controller.signal.aborted)break;const file=batch[i];
@@ -100,7 +103,7 @@
         showUploadMessage(`Файл ${i+1} из ${batch.length}: ${file.name}.`);
         const progress=text=>showUploadMessage(`${file.name}: ${text}`);
         try{
-          const read=await D.read(file,{progress,signal:controller.signal,fromCamera});
+          const read=await D.read(file,{progress,signal:controller.signal,fromCamera,forceOCR});
           if(activeCase!==target||controller.signal.aborted)break;
           Object.assign(item,read,{processing:false});
           if(read.empty)item.error='Текст не найден. Добавьте более чёткий файл или заполните поля вручную по оригиналу.';
@@ -125,6 +128,7 @@
     }catch(error){showUploadMessage(error.message);}finally{await D.stop().catch(()=>{});controller=null;setBusy(false);renderRecognitions();}
   }
   function getFormFields(){const fields={};for(const k of Object.keys(D.FIELD_LABELS))fields[k]=$('field-'+k).value.trim();return fields;}
+  function sourceLocation(choice){return (choice.page?'стр. '+choice.page+', ':'')+'строка '+choice.line;}
   function refreshFieldHints(){
     if(!currentReview)return;const fields=getFormFields(),errors=D.validate(fields);
     for(const key of Object.keys(D.FIELD_LABELS)){
@@ -132,7 +136,7 @@
       input.setAttribute('aria-invalid',String(!!errors[key]));
       if(errors[key]){hint.textContent=!fields[key]&&choices.length>1?'Найдено несколько вариантов. Выберите значение по документу.':errors[key];hint.className='field-hint err';}
       else if(!fields[key]){hint.textContent='Для этого типа документа поле необязательно.';hint.className='field-hint';}
-      else if(match){hint.textContent='Найдено в файле, строка '+match.line+'. Сверьте с оригиналом.';hint.className='field-hint';}
+      else if(match){hint.textContent='Найдено в файле, '+sourceLocation(match)+'. '+match.quote;hint.className='field-hint';}
       else{hint.textContent='Введено аналитиком. Это значение не подтверждено распознанным текстом.';hint.className='field-hint manual';}
     }
     $('confirmFields').disabled=!!Object.keys(errors).length;
@@ -144,7 +148,7 @@
       const box=node('div',undefined,'recognition-field');const l=node('label',label);l.htmlFor='field-'+key;
       let input;if(key==='kind'){input=node('select');input.append(new Option('Выберите тип',''));for(const kind of D.TYPES)input.append(new Option(kind,kind));}else{input=node('input');input.type=key==='date'?'date':'text';input.maxLength=key==='inn'?12:160;if(['inn','amount'].includes(key))input.inputMode=key==='inn'?'numeric':'decimal';}
       input.id='field-'+key;input.value=item.fields[key]||'';input.setAttribute('aria-describedby','hint-'+key);input.oninput=refreshFieldHints;const hint=node('p',undefined,'field-hint');hint.id='hint-'+key;box.append(l,input,hint);
-      if((item.candidates[key]||[]).length>1){const choices=node('div',undefined,'field-choices');for(const c of item.candidates[key]){const b=node('button',c.value+' (строка '+c.line+')');b.type='button';b.onclick=()=>{input.value=c.value;refreshFieldHints();};choices.append(b);}box.append(choices);}
+      if((item.candidates[key]||[]).length>1){const choices=node('div',undefined,'field-choices');for(const c of item.candidates[key]){const b=node('button',c.value+' ('+sourceLocation(c)+')');b.type='button';b.title=c.quote;b.onclick=()=>{input.value=c.value;refreshFieldHints();};choices.append(b);}box.append(choices);}
       $('recognitionForm').append(box);
     }
     if(previewURL)URL.revokeObjectURL(previewURL);previewURL=null;const original=originals.get(keyFor(item.name));$('originalPreview').replaceChildren();
@@ -177,13 +181,73 @@
     for(const t of packet.transactions){const row=node('div',undefined,'payment-summary-row');row.append(node('span',`${t.id}: ${rub(Number(t.amount))} · ${t.counterparty} · Договор ${t.contract}`));const remove=node('button','Убрать платёж');remove.onclick=()=>{if(busy)return;packet.transactions=packet.transactions.filter(x=>x.id!==t.id);markDirty();renderPayments();};row.append(remove);$('paymentList').append(row);}
     if(!packet.transactions.length)$('paymentList').append(node('p','Платежей пока нет. Вы можете прочитать документы и заполнить их поля. Для сравнения добавьте хотя бы один платёж.','small muted'));
   }
+  function issuesForRow(row){
+    return report.issues.filter(issue=>issue.contract===null||
+      (issue.contract===row.contract&&(!issue.inn||issue.inn===row.inn)));
+  }
+  const profileRules = [
+    {id:'SUP-01',title:'Договор по операции',expected:'Договор с тем же номером и ИНН.',codes:['MISSING_CONTRACT','AMBIGUOUS_CONTRACT','INN'],kind:'contract'},
+    {id:'SUP-02',title:'Подтверждение поставки',expected:'Акт или УПД при полном расчёте.',codes:['MISSING_PRIMARY','AMBIGUOUS_PRIMARY','MIXED_SETTLEMENT'],kind:'primary'},
+    {id:'SUP-03',title:'Сумма полного расчёта',expected:'Сумма платежей равна итоговой сумме действующих актов и УПД.',codes:['AMOUNT','MISSING_PRIMARY','AMBIGUOUS_PRIMARY','MIXED_SETTLEMENT'],kind:'primary'}
+  ];
+  function renderRequirements(){
+    const list=$('requirementGroups');
+    list.replaceChildren();
+    $('requirementsVersion').textContent=report&&!dirty?(report.profile_version||'supply-v1')+' · '+report.revision:'supply-v1 · учебный профиль';
+    const rows=report&&!dirty?report.rows:[];
+    if(!rows.length){
+      list.append(node('p','Не проверено. Запустите сверку, чтобы увидеть статус и документы по каждому платежу.','small muted'));
+      return;
+    }
+    rows.forEach((row,index)=>{
+      const group=node('details',undefined,'requirement-group');
+      group.open=index===0;
+      group.append(node('summary',row.transaction_ids.join(', ')+' · '+row.contract+' · ИНН '+row.inn));
+      const findings=issuesForRow(row);
+      for(const rule of profileRules){
+        const relevant=findings.filter(issue=>rule.codes.includes(issue.code));
+        const sources=report.documents.filter(doc=>row.documents.includes(doc.name)&&doc.fields?.inn===row.inn&&doc.fields.kind===rule.kind&&!doc.errors?.length);
+        const advance=rule.kind==='primary'&&row.settlement!=='full'&&!relevant.some(issue=>issue.code==='MIXED_SETTLEMENT');
+        const missing=relevant.some(issue=>issue.code.startsWith('MISSING'));
+        const manual=relevant.some(issue=>['AMBIGUOUS_CONTRACT','AMBIGUOUS_PRIMARY','MIXED_SETTLEMENT'].includes(issue.code));
+        const status=advance?'Не применяется к авансу':missing?'Нет подтверждения':manual?'Ручная оценка':relevant.length?'Расхождение':'Подтверждено по профилю';
+        const item=node('article',undefined,'requirement-item');
+        item.append(node('h3',rule.id+' · '+rule.title),node('span',status,'requirement-status'),node('p',rule.expected,'small muted'));
+        for(const issue of relevant)item.append(node('p',issue.title+'. '+plain(localizeMoney(issue.detail)),'small'));
+        const files=new Set([...sources.map(source=>source.name),...relevant.flatMap(issue=>issue.evidence.map(source=>source.file))]);
+        if(!advance&&files.size){
+          const links=node('div',undefined,'recognition-actions');
+          for(const file of files){const button=node('button','Источник: '+file);button.type='button';button.onclick=()=>openIssueDocument(file);links.append(button);}
+          item.append(links);
+        }
+        group.append(item);
+      }
+      list.append(group);
+    });
+  }
+  function renderRevisionComparison(){
+    const target=$('revisionComparison');
+    target.replaceChildren();
+    const revisions=[...localRevisions.values()].filter(entry=>entry.report.case_id===packet?.case_id).slice(-2);
+    if(revisions.length<2){
+      target.append(node('p','Для сравнения нужны две проверки этого обращения.','small muted'));
+      return;
+    }
+    const [before,after]=revisions.map(entry=>entry.report);
+    target.append(node('p',before.revision+' → '+after.revision+' · замечаний '+before.issue_count+' → '+after.issue_count));
+    const identity=issue=>JSON.stringify([issue.code,issue.contract,issue.inn??null,issue.detail]);
+    for(const [label,from,to] of [['Снято',before,after],['Добавлено',after,before]]){
+      const keys=new Set(to.issues.map(identity)),changed=from.issues.filter(issue=>!keys.has(identity(issue)));
+      for(const issue of changed)target.append(node('p',label+' · '+issue.code+' · '+issue.title+'. '+plain(localizeMoney(issue.detail)),'small'));
+    }
+  }
   function selectedIssues(){
     if(!report)return [];
     const row=selectedPayment===null?null:report.rows[selectedPayment];
-    return row?report.issues.filter(i=>i.contract===row.contract||i.contract===null):report.issues;
+    return row?issuesForRow(row):report.issues;
   }
   function openIssueDocument(name){
-    $('paymentIssuesDialog').close();
+    if($('paymentIssuesDialog').open)$('paymentIssuesDialog').close();
     const index=packet.documents.findIndex(d=>d.name===name);
     if(index<0){toast('Файла больше нет в обращении. Повторите проверку.');return;}
     docIndex=index;docs();openCurrentDocument();
@@ -192,8 +256,9 @@
     container.replaceChildren();
     if(!items.length){container.append(node('p','По выбранным платежам замечаний нет. Содержание и подлинность документов проверяет сотрудник.','success-message'));return;}
     for(const issue of items){
-      const card=node('article',undefined,'issue');card.append(node('h3',plain(issue.title)),node('p',plain(localizeMoney(issue.detail))));
+      const card=node('article',undefined,'issue');card.append(node('span','Правило '+issue.code,'small muted'),node('h3',plain(issue.title)),node('p',plain(localizeMoney(issue.detail))));
       card.append(node('p','Что сделать: '+plain(localizeMoney(issue.action||issue.detail)),'issue-next'));
+      if(!issue.evidence.length)card.append(node('p','Источник проверки — реквизиты операции и состав комплекта. Подтверждающего файла нет.','small muted'));
       const names=[...new Set(issue.evidence.map(e=>e.file))];
       for(const name of names){const b=node('button','Проверить поля: '+name,'issue-edit-document');b.onclick=()=>openIssueDocument(name);card.append(b);}
       if(!names.length){const b=node('button','Добавить недостающий документ');b.onclick=()=>{$('paymentIssuesDialog').close();go('uploadSection');$('uploadFiles').focus();};card.append(b);}
@@ -215,9 +280,10 @@
     $('paymentIssuesDialog').showModal();
   }
   function decorateReport(){
-    if(!report)return;document.querySelectorAll('#rows .map-row').forEach((row,i)=>{
+    if(!report)return;
+    renderRequirements();renderRevisionComparison();document.querySelectorAll('#rows .map-row').forEach((row,i)=>{
       row.classList.toggle('selected-payment',selectedPayment===i);
-      const count=report.issues.filter(x=>x.contract===report.rows[i].contract||x.contract===null).length;
+      const count=issuesForRow(report.rows[i]).length;
       const b=node('button',count?'Посмотреть замечания ('+count+')':'Посмотреть результат','select-payment');
       b.setAttribute('aria-pressed',String(selectedPayment===i));b.setAttribute('aria-haspopup','dialog');b.onclick=()=>openPaymentIssues(i);b.disabled=dirty;
       row.querySelector('.select-payment')?.remove();row.querySelector('.operation-node').append(b);
@@ -241,7 +307,7 @@
     $('allPaymentIssues').onclick=()=>{selectedPayment=null;decorateReport();};
     const originalDocs=docs;docs=()=>{originalDocs();const d=packet?.documents[docIndex];$('docText').value=d?(d.sourceText??d.text):'';$('docText').readOnly=true;$('reviewDocument').disabled=!d;$('saveDoc').hidden=true;syncDocumentSummary();document.querySelectorAll('#docList button').forEach((b,i)=>{const doc=packet.documents[i];b.textContent=doc.name+' · '+({upload:'Ваш файл',example:'Учебный',import:'Импорт'})[documentOrigin(doc)];});};
     const oldRender=render;render=r=>{oldRender(r);decorateReport();syncDocumentSummary();refreshGuards();};
-    const oldDirty=markDirty;markDirty=()=>{oldDirty();syncDocumentSummary();document.querySelectorAll('.select-payment').forEach(b=>{b.disabled=true;b.textContent='Повторите проверку';});refreshGuards();};
+    const oldDirty=markDirty;markDirty=()=>{oldDirty();syncDocumentSummary();renderRequirements();document.querySelectorAll('.select-payment').forEach(b=>{b.disabled=true;b.textContent='Повторите проверку';});refreshGuards();};
     const oldOpen=openQueueCase;openQueueCase=id=>{if(busy){toast('Дождитесь обработки файлов или отмените её.');return;}selectedPayment=null;oldOpen(id);records().forEach(x=>{x.processing=false;});renderRecognitions();renderPayments();docs();decorateReport();$('docCount').textContent=packet.documents.length;};
     const oldCheck=check;check=async()=>{
       if(busy)return;
@@ -253,6 +319,21 @@
     const oldWorkflow=updateCaseWorkflow;updateCaseWorkflow=()=>{oldWorkflow();refreshGuards();};
     for(const id of ['loadDemo','loadFixed']){const old=$(id).onclick;$(id).onclick=async()=>{if(busy)return;if(records().length&&!window.confirm('Заменить документы, платежи и распознанные поля этого обращения учебным примером?'))return;activeCase.recognition=[];activeCase.documentOrigins={};await old();renderRecognitions();renderPayments();};}
     $('deleteDoc').onclick=()=>{if(busy)return;const d=packet?.documents[docIndex];if(!d||!window.confirm('Убрать '+d.name+' из обращения?'))return;const item=records().find(x=>x.name===d.name);if(item)records().splice(records().indexOf(item),1);packet.documents.splice(docIndex,1);docIndex=Math.max(0,docIndex-1);docs();markDirty();renderRecognitions();};
+    $('importPaymentsCSV').onclick=()=>$('paymentsCSVFile').click();
+    $('paymentsCSVFile').onchange=async event=>{
+      const file=event.target.files[0],target=activeCase;
+      event.target.value='';
+      if(!file||!target||busy)return;
+      try{
+        const transactions=await D.readPaymentsCSV(file);
+        if(activeCase!==target||busy)return;
+        validateDemo({...packet,transactions});
+        if(packet.transactions.length&&!window.confirm('Заменить текущие платежи списком из CSV?'))return;
+        packet.transactions=transactions;
+        markDirty();renderPayments();saveActiveCase();
+        toast('Платежи из CSV загружены. Запустите сверку.');
+      }catch(error){toast(error.message);}
+    };
     $('paymentForm').onsubmit=e=>{e.preventDefault();if(busy)return;try{const f=e.target;const t=Object.fromEntries(new FormData(f));t.amount=D.money(t.amount);if(t.amount===null)throw Error('Проверьте сумму платежа.');if(!D.dateValue(t.date))throw Error('Проверьте дату платежа.');if(packet.transactions.some(x=>x.id===t.id))throw Error('Платёж с таким номером уже есть.');if(packet.transactions.length>=300)throw Error('Можно добавить не больше 300 платежей.');packet.transactions.push(t);markDirty();renderPayments();f.reset();$('paymentError').textContent='';}catch(error){$('paymentError').textContent=error.message;}};
     const oldImport=$('importFile').onchange;$('importFile').onchange=async e=>{if(busy)return;const previous=packet;await oldImport(e);if(packet!==previous){activeCase.documentOrigins=Object.fromEntries(packet.documents.map(d=>[d.name,'import']));activeCase.recognition=packet.documents.filter(d=>d.review).map(d=>({...D.extractFields(d.sourceText||d.text),name:d.name,sourceText:d.sourceText||'',fields:d.review.fields||D.extractFields(d.text).fields,confirmed:!!d.review.confirmed,method:d.review.method||'text',pages:d.review.pages||1,confidence:d.review.confidence??null}));saveActiveCase();}renderRecognitions();renderPayments();};
     // A pending read is never allowed to finish into another account or case.

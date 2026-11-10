@@ -1,0 +1,157 @@
+/* Public pages share a light shell. Product previews keep their own palette. */
+:is(.page-home,.page-evidence) {
+  color-scheme: light;
+  --bg: #fff;
+  --ink: #102846;
+  --muted: #455e7d;
+  --accent: #0759c7;
+  --line: #d8e5f4;
+  --editorial-paper: #fff;
+  --editorial-ink: var(--ink);
+  --editorial-accent: var(--accent);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+:is(.page-home,.page-evidence) .header,
+:is(.page-home,.page-evidence) .header.is-scrolled {
+  background: #fffffff5;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 4px 18px #1847790f;
+}
+:is(.page-home,.page-evidence) .header nav a { color: #304d72; }
+:is(.page-home,.page-evidence) .header nav a:hover { color: var(--accent); }
+:is(.page-home,.page-evidence) :is(.header,.team-footer) .trace-wordmark img {
+  filter: brightness(0) saturate(100%) invert(20%) sepia(94%) saturate(2905%) hue-rotate(205deg);
+  mix-blend-mode: normal;
+}
+:is(.page-home,.page-evidence) .site-mobile-menu summary {
+  border-color: #a8c1e2;
+  color: var(--accent);
+}
+:is(.page-home,.page-evidence) .site-mobile-menu nav {
+  background: #fff;
+  border-color: var(--line);
+  box-shadow: 0 16px 35px #1b407a21;
+}
+:is(.page-home,.page-evidence) .site-mobile-menu nav a { border-color: var(--line); }
+
+:is(.page-home,.page-evidence) .button,
+.page-home .hero-actions .button,
+:is(.page-home,.page-evidence) .header .button {
+  background: #0759c7;
+  border-color: #0759c7;
+  color: #fff;
+  box-shadow: 0 5px 16px #0759c725;
+}
+:is(.page-home,.page-evidence) .button:hover,
+.page-home .hero-actions .button:hover,
+:is(.page-home,.page-evidence) .header .button:hover {
+  background: #0549a5;
+  border-color: #0549a5;
+  color: #fff;
+}
+:is(.page-home,.page-evidence) :is(a,button,summary,input):focus-visible {
+  outline-color: #0062dc;
+}
+
+.page-home .hero {
+  background: radial-gradient(ellipse at 50% 62%, #e6f1ffb3, transparent 70%), #fff;
+  color: var(--ink);
+}
+.page-home .hero-copy h1 { color: var(--ink); }
+.page-home .hero-copy h1 em { color: #0759c7; }
+.page-home .hero-intro { color: var(--muted); }
+.page-home .hero-aurora { opacity: .55; }
+.page-home .hero-aurora i { opacity: .3; filter: blur(60px); }
+.page-home .hero-aurora::before,
+.page-home .hero-aurora::after {
+  border-color: #176ada30;
+  box-shadow: 0 0 30px #176ada16;
+}
+.page-home .hero-visual {
+  background: #f4f8ff;
+  border-color: #c3d9f6;
+  box-shadow: 0 20px 55px #174f981a;
+}
+.page-home .preview-panel {
+  --ink: #f4f8ff;
+  --muted: #aac0de;
+  --line: #a9c8f544;
+  --accent: #9bd6ff;
+  color: var(--ink);
+  color-scheme: dark;
+}
+.page-home .preview-panel .preview-open { color: #c8e8ff; }
+.page-home .preview-panel .preview-open:hover { color: #fff; }
+.page-home .hero-bottom { border-color: var(--line); }
+.page-home .hero-bottom .motion-toggle {
+  color: #174a88;
+  background: #ffffffde;
+  border-color: #9ebce3;
+}
+
+.page-home :is(.statement,.materials,.proof-band,.value,.closing,.connection-story) {
+  background: #fff;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.page-home :is(.proof-band,.connection-story) { background: #f5f9ff; }
+.page-home :is(.statement,.materials,.proof-band,.value,.closing,.connection-intro) :is(.display,h2) { color: var(--ink); }
+.page-home :is(.statement,.materials,.proof-band,.value,.closing,.connection-intro) :is(.eyebrow,.display span,h2 em) { color: var(--accent); }
+.page-home :is(.statement-body,.chapter-copy p,.section-action > span,.proof-lines p,.metric-strip p,.value-head > p,.connection-note,.small-note) {
+  color: var(--muted);
+}
+.page-home .statement :is(.scenario-row,.chapter-1,.chapter-2,.chapter-3) {
+  background: #f2f7ff;
+  border: 1px solid #d5e5fa;
+  box-shadow: none;
+}
+.page-home .statement .chapter-copy :is(h3,.step-num) { color: #173d6e; }
+.page-home .material-list > a {
+  color: var(--ink);
+  background: #fff;
+  border-color: #d2e2f6;
+  box-shadow: 0 8px 24px #12457f0b;
+}
+.page-home .material-list > a:hover { background: #eef5ff; border-color: #8fb6ec; }
+.page-home .material-list > a > small { color: var(--muted); }
+.page-home :is(.proof-status,.metric-strip strong,.text-link) { color: var(--accent); }
+.page-home .proof-status.pending { color: #805113; }
+.page-home .connection-story .brand-sculpture .trace-logo-video {
+  border-radius: 22px;
+  box-shadow: 0 20px 44px #1034622b;
+}
+.page-home .connection-story .orbit-ring { border-color: #6c9ddd5c; }
+.page-home .connection-story .orbit-label { color: #42628e; }
+.page-home .closing::before { background: radial-gradient(ellipse at center, #dcecff, transparent 72%); }
+
+:is(.page-home,.page-evidence) .team-footer {
+  background: #edf4ff;
+  color: var(--ink);
+  border-color: #d4e4f8;
+}
+:is(.page-home,.page-evidence) .team-footer :is(h2,strong,a) { color: #174579; }
+:is(.page-home,.page-evidence) .team-footer :is(p,small,span) { color: var(--muted); }
+:is(.page-home,.page-evidence) .team-footer a:hover { color: #0759c7; }
+:is(.page-home,.page-evidence) .team-footer-bottom { border-color: #cbdff6; }
+
+.page-evidence .evidence-main :is(.research-next,.formula-block,.comparison article,.economic-control,.economy-table-wrap) {
+  background: #f2f7ff;
+  border-color: #d7e5f7;
+  color: var(--ink);
+}
+.page-evidence .evidence-main :is(.display,.formula-block p) { color: var(--ink); }
+.page-evidence .evidence-main :is(p,.formula-block small,.formula-block > span) { color: var(--muted); }
+.page-evidence .evidence-main .scope-note { color: #35577f !important; border-color: #609be5; }
+.page-evidence .evidence-main :is(.contents a,.comparison span,.reach-strip strong,.build-results strong,.economic-results strong,caption,.source-list a,.pilot-list b) { color: var(--accent); }
+.page-evidence .evidence-main :is(.contents a,.source-list a):hover { text-decoration: underline; }
+.page-evidence .evidence-downloads a { border-color: #c2d8f4; }
+.page-evidence .evidence-downloads a:hover { background: #dfecff; }
+.page-evidence .economic-control input { accent-color: #0759c7; }
+
+.page-home .statement :is(.statement-body,.chapter-copy p,.section-action > span),
+.page-home .statement .statement-body p { color: var(--muted); }
+.page-evidence .evidence-main .display span { color: var(--accent); }

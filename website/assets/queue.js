@@ -211,7 +211,7 @@ async function initializeQueue() {
   $('prepareRequest').onclick = () => {
     if (!activeCase || dirty || !report?.issue_count) return;
     if ($('draft').value.trim().length < 10) {toast('Добавьте текст уточнения.'); return;}
-    activeCase.status='waiting'; addCaseEvent('Зафиксирован запрос уточнения',$('draft').value); saveActiveCase(); updateCaseWorkflow();
+    activeCase.status='waiting'; addCaseEvent('Зафиксирован запрос уточнения','Версия '+report.revision+' · сотрудник учебного обращения. '+$('draft').value); saveActiveCase(); updateCaseWorkflow();
     toast('Запрос зафиксирован в демо. Сообщение клиенту не отправлялось.');
   };
   $('approve').onclick = async () => {

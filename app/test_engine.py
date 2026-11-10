@@ -23,6 +23,31 @@ class EngineTests(unittest.TestCase):
     def test_duplicates_are_not_double_counted(self):
         p = demo(True); d = copy.deepcopy(p["documents"][1]); d["name"] = "копия.txt"; p["documents"].append(d)
         self.assertEqual([i["code"] for i in analyze(p)["issues"]], ["DUPLICATE"])
+    def test_shared_contract_number_keeps_counterparties_separate(self):
+        p = demo(True)
+        first, second = p["transactions"][:2]
+        old_contract = second["contract"]
+        second["contract"] = first["contract"]
+        for doc in p["documents"]:
+            doc["text"] = doc["text"].replace("Договор: " + old_contract,
+                                              "Договор: " + first["contract"])
+        self.assertEqual(analyze(p)["issues"], [])
+        p["documents"] = [d for d in p["documents"]
+                          if not ("Тип: Акт" in d["text"] and second["inn"] in d["text"])]
+        report = analyze(p)
+        self.assertEqual([(i["code"], i["inn"]) for i in report["issues"]],
+                         [("MISSING_PRIMARY", second["inn"])])
+        self.assertEqual(report["rows"][0]["status"], "complete")
+
+    def test_versions_of_same_primary_cannot_be_summed(self):
+        p = demo(True)
+        original = next(d for d in p["documents"] if d["name"] == "УПД-41.txt")
+        p["documents"].append({"name": "УПД-41-v2.txt", "text": original["text"] + "\nКопия другой редакции"})
+        p["transactions"][0]["amount"] = "960000"
+        report = analyze(p)
+        self.assertEqual([i["code"] for i in report["issues"]], ["AMBIGUOUS_PRIMARY"])
+        self.assertEqual(len(report["issues"][0]["evidence"]), 2)
+
     def test_bad_extraction_cannot_be_complete(self):
         p = demo(True); p["documents"][1]["text"] = "Неразборчивый документ"
         r = analyze(p)

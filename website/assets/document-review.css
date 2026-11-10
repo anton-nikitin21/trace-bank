@@ -35,3 +35,12 @@
 @media(max-width:600px){
   .upload-actions{display:grid;grid-template-columns:minmax(0,1fr)}
 }
+.ocr-option{display:flex;align-items:baseline;gap:9px;margin-top:14px;color:var(--muted);font-size:14px;line-height:1.5}
+.ocr-option input{flex:0 0 auto;accent-color:#0759c7}
+#recognitionDialog .field-hint{overflow-wrap:anywhere}
+.requirements-box .requirement-group{border-top:1px solid var(--line);padding-block:10px}
+.requirement-group summary{cursor:pointer;min-height:44px;padding-block:10px;font-weight:600;overflow-wrap:anywhere}
+.requirement-item{padding:12px 14px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px;overflow-wrap:anywhere}
+.requirement-item h3{display:inline;margin:0 10px 0 0}
+.requirement-status{display:inline-block;font-size:13px;color:#b9ddff}
+#trace-workspace .requirement-item p{margin-block:8px}

@@ -12,7 +12,7 @@
   function showUploadMessage(text){$('uploadState').textContent=text;}
   function setBusy(value){
     busy=value;
-    for(const id of ['uploadFiles','addDoc','analyze','importBtn','loadDemo','loadFixed','backToQueue','newCaseButton','resetDemo','prepareRequest','approve','deleteDoc','copyDraft','export','reviewDocument']){
+    for(const id of ['uploadFiles','captureDocument','addDoc','analyze','importBtn','loadDemo','loadFixed','backToQueue','newCaseButton','resetDemo','prepareRequest','approve','deleteDoc','copyDraft','export','reviewDocument']){
       const n=$(id);if(n){if(value){n.dataset.beforeUploadDisabled=String(n.disabled);n.disabled=true}else if(n.dataset.beforeUploadDisabled!==undefined){n.disabled=n.dataset.beforeUploadDisabled==='true';delete n.dataset.beforeUploadDisabled;}}
     }
     document.querySelectorAll('.shell-side nav button').forEach(b=>b.disabled=value);
@@ -85,10 +85,10 @@
     if(busy)return;if(!window.confirm('Убрать '+item.name+' из текущего обращения?'))return;
     const list=records();list.splice(list.indexOf(item),1);packet.documents=packet.documents.filter(d=>d.name!==item.name);originals.delete(keyFor(item.name));docIndex=Math.min(docIndex,Math.max(0,packet.documents.length-1));docs();markDirty();renderRecognitions();saveActiveCase();
   }
-  async function upload(files){
+  async function upload(files,{fromCamera=false}={}){
     if(busy||!activeCase)return;
     const batch=Array.from(files);if(!batch.length)return;if(batch.length>D.LIMITS.batch){toast('Выберите не больше 10 файлов за один раз.');return;}
-    const target=activeCase;controller=new AbortController();setBusy(true);let loaded=0;
+    const target=activeCase;controller=new AbortController();setBusy(true);let loaded=0;const failures=[];
     try{
       for(let i=0;i<batch.length;i++){
         if(controller.signal.aborted)break;const file=batch[i];
@@ -100,12 +100,12 @@
         showUploadMessage(`Файл ${i+1} из ${batch.length}: ${file.name}.`);
         const progress=text=>showUploadMessage(`${file.name}: ${text}`);
         try{
-          const read=await D.read(file,{progress,signal:controller.signal});
+          const read=await D.read(file,{progress,signal:controller.signal,fromCamera});
           if(activeCase!==target||controller.signal.aborted)break;
           Object.assign(item,read,{processing:false});
           if(read.empty)item.error='Текст не найден. Добавьте более чёткий файл или заполните поля вручную по оригиналу.';
           if(old)records().splice(records().indexOf(old),1);
-          records().push(item);activeCase.documentOrigins ||= {};activeCase.documentOrigins[file.name]='upload';originals.set(keyFor(file.name),file);
+          records().push(item);activeCase.documentOrigins ||= {};activeCase.documentOrigins[file.name]='upload';originals.set(keyFor(file.name),{file,kind:read.kind});
           const pending={name:file.name,text:'',sourceText:item.sourceText,review:{confirmed:false,method:item.method,pages:item.pages}};
           const at=packet.documents.findIndex(d=>d.name===file.name);if(at>=0)packet.documents[at]=pending;else packet.documents.push(pending);
           docIndex=packet.documents.findIndex(d=>d.name===file.name);docs();markDirty();loaded++;renderRecognitions();saveActiveCase();
@@ -114,10 +114,14 @@
           item.processing=false;item.error=error.message||'Не удалось прочитать файл.';
           // Failed files do not replace previously confirmed versions.
           if(!old&&!oldDocument){records().push(item);saveActiveCase();}
-          showUploadMessage(file.name+': '+item.error);renderRecognitions();
+          failures.push(file.name+': '+item.error);renderRecognitions();
         }
       }
-      showUploadMessage(controller.signal.aborted?'Обработка отменена. Уже прочитанные документы сохранены.':`Прочитано файлов: ${loaded}. Проверьте поля каждого документа перед анализом.`);
+      if(controller.signal.aborted)showUploadMessage('Обработка отменена. Уже прочитанные документы сохранены.');
+      else showUploadMessage([
+        loaded?`Прочитано файлов: ${loaded}. Проверьте поля перед анализом.`:'',
+        ...failures
+      ].filter(Boolean).join(' '));
     }catch(error){showUploadMessage(error.message);}finally{await D.stop().catch(()=>{});controller=null;setBusy(false);renderRecognitions();}
   }
   function getFormFields(){const fields={};for(const k of Object.keys(D.FIELD_LABELS))fields[k]=$('field-'+k).value.trim();return fields;}
@@ -144,7 +148,7 @@
       $('recognitionForm').append(box);
     }
     if(previewURL)URL.revokeObjectURL(previewURL);previewURL=null;const original=originals.get(keyFor(item.name));$('originalPreview').replaceChildren();
-    if(original){previewURL=URL.createObjectURL(original);if(/\.(png|jpe?g)$/i.test(item.name)){const img=node('img');img.src=previewURL;img.alt='Оригинал '+item.name;$('originalPreview').append(img);}else if(/\.pdf$/i.test(item.name)){const link=node('a','Открыть исходный PDF в новой вкладке');link.href=previewURL;link.target='_blank';link.rel='noopener';$('originalPreview').append(link);}}
+    if(original){previewURL=URL.createObjectURL(original.file);if(original.kind==='image'||['png','jpg','jpeg'].includes(original.kind)){const img=node('img');img.src=previewURL;img.alt='Оригинал '+item.name;$('originalPreview').append(img);}else if(original.kind==='pdf'){const link=node('a','Открыть исходный PDF в новой вкладке');link.href=previewURL;link.target='_blank';link.rel='noopener';$('originalPreview').append(link);}}
     else $('originalPreview').textContent='Оригинал файла не хранится после обновления страницы. Ниже доступен извлечённый текст.';
     refreshFieldHints();$('recognitionDialog').showModal();
   }
@@ -229,6 +233,8 @@
     document.body.append(issuesDialog);$('closePaymentIssues').onclick=()=>issuesDialog.close();$('recheckPaymentIssues').onclick=async()=>{issuesDialog.close();await check();go('issuesPanel');};
     $('uploadFiles').onclick=()=>$('documentFiles').click();$('addDoc').onclick=$('uploadFiles').onclick;
     $('documentFiles').onchange=e=>{const files=Array.from(e.target.files);e.target.value='';upload(files);};
+    $('captureDocument').onclick=()=>$('cameraFile').click();
+    $('cameraFile').onchange=e=>{const files=Array.from(e.target.files);e.target.value='';upload(files,{fromCamera:true});};
     const drop=$('uploadDrop');for(const event of ['dragenter','dragover'])drop.addEventListener(event,e=>{e.preventDefault();drop.classList.add('dragging');});for(const event of ['dragleave','drop'])drop.addEventListener(event,e=>{e.preventDefault();drop.classList.remove('dragging');});drop.addEventListener('drop',e=>upload(e.dataTransfer.files));
     $('cancelUpload').onclick=()=>{controller?.abort();D.stop().catch(()=>{});showUploadMessage('Отменяем обработку...');};
     $('reviewDocument').onclick=openCurrentDocument;$('docText').readOnly=true;$('docText').oninput=null;

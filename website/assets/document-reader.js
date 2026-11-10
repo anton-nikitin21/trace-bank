@@ -90,9 +90,12 @@
   }
   async function stop(){workerGeneration++;const pending=creatingWorker;creatingWorker=null;if(pending)pending.then(w=>w.terminate()).catch(()=>{});if(worker){const w=worker;worker=null;await w.terminate();}}
   function abortCheck(signal){if(signal?.aborted)throw new DOMException('Обработка отменена.','AbortError');}
-  async function fileKind(file){
+  async function fileKind(file,fromCamera=false){
     if(file.size>LIMITS.bytes)throw Error('Файл больше 20 МБ. Разделите его перед загрузкой.');
-    const extension=file.name.split('.').pop().toLowerCase();if(!['pdf','png','jpg','jpeg','txt'].includes(extension))throw Error('Поддерживаются PDF, PNG, JPG, JPEG и TXT.');
+    const extension=file.name.split('.').pop().toLowerCase();
+    if(fromCamera&&['image/heic','image/heif','image/webp'].includes(file.type))return 'image';
+    if(fromCamera&&!['png','jpg','jpeg'].includes(extension))throw Error('Сделайте новый снимок или загрузите JPEG либо PNG.');
+    if(!['pdf','png','jpg','jpeg','txt'].includes(extension))throw Error('Поддерживаются PDF, PNG, JPG, JPEG и TXT.');
     const bytes=new Uint8Array(await file.slice(0,8).arrayBuffer());
     const isPDF=String.fromCharCode(...bytes.slice(0,5))==='%PDF-';
     if(extension==='pdf'&&!isPDF)throw Error('Содержимое файла не соответствует PDF.');
@@ -100,8 +103,24 @@
     if(extension==='png'&&!(bytes[0]===137&&String.fromCharCode(...bytes.slice(1,4))==='PNG'))throw Error('Содержимое файла не соответствует PNG.');
     return extension;
   }
-  async function read(file,{progress=()=>{},signal}={}){
-    abortCheck(signal);const kind=await fileKind(file);let text='',pages=1,method='text',confidence=null;
+  async function decodeImage(file){
+    try{
+      if(typeof createImageBitmap==='function')return await createImageBitmap(file);
+    }catch{}
+    const url=URL.createObjectURL(file);
+    const image=new Image();
+    image.src=url;
+    try{
+      await image.decode();
+      return image;
+    }catch{
+      throw Error('Не удалось открыть изображение. Сделайте снимок заново или загрузите JPEG либо PNG.');
+    }finally{
+      URL.revokeObjectURL(url);
+    }
+  }
+  async function read(file,{progress=()=>{},signal,fromCamera=false}={}){
+    abortCheck(signal);const kind=await fileKind(file,fromCamera);let text='',pages=1,method='text',confidence=null;
     if(kind==='txt')text=await file.text();
     else if(kind==='pdf'){
       const lib=await abortable(getPDF(),signal);abortCheck(signal);
@@ -121,10 +140,24 @@
         text=chunks.join('\n\n');method=scanned?'pdf-ocr':'pdf-text';
       }finally{signal?.removeEventListener('abort',cancelPDF);await task.destroy();}
     }else{
-      const bitmap=await createImageBitmap(file);try{if(bitmap.width*bitmap.height>LIMITS.pixels)throw Error('Изображение больше 12 мегапикселей. Уменьшите размер.');abortCheck(signal);const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;try{canvas.getContext('2d').drawImage(bitmap,0,0);const result=await ocr(canvas,progress,signal);text=result.text;confidence=result.confidence;}finally{canvas.width=1;canvas.height=1;}}finally{bitmap.close();}method='image-ocr';
+      const image=await decodeImage(file);
+      try{
+        abortCheck(signal);
+        const width=image.naturalWidth||image.width,height=image.naturalHeight||image.height;
+        const scale=Math.min(1,Math.sqrt(LIMITS.pixels/(width*height)));
+        const canvas=document.createElement('canvas');
+        canvas.width=Math.max(1,Math.floor(width*scale));
+        canvas.height=Math.max(1,Math.floor(height*scale));
+        try{
+          canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);
+          const result=await ocr(canvas,progress,signal);
+          text=result.text;confidence=result.confidence;
+        }finally{canvas.width=1;canvas.height=1;}
+      }finally{image.close?.();}
+      method='image-ocr';
     }
     abortCheck(signal);text=clean(text);const parsed=extractFields(text);
-    return {name:file.name,sourceText:text,pages,method,confidence,...parsed,empty:!text.trim()};
+    return {name:file.name,sourceText:text,pages,method,kind,confidence,...parsed,empty:!text.trim()};
   }
   const api={LIMITS,VERSIONS,FIELD_LABELS,TYPES,extractFields,validate,canonical,reviewedDocument,dateValue,money,read,stop};
   root.TraceDocuments=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;

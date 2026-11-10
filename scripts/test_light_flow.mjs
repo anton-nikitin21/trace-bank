@@ -36,12 +36,12 @@ try{
   const widthResults=[];
   for(const width of [360,390,768,1024,1440]){
     const clock=(await state()).clock;await page.setViewportSize({width,height:width<600?844:1000});await page.waitForTimeout(250);const s=await state();
-    const dimensions=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));assert.ok(dimensions.scroll<=dimensions.width+1,JSON.stringify(dimensions));assert.equal(s.threads,width<=600?6:12);assert.ok(s.clock>=clock-.05,'Resize reset transport clock');widthResults.push({...dimensions,threads:s.threads});
+    const dimensions=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));assert.ok(dimensions.scroll<=dimensions.width+1,JSON.stringify(dimensions));assert.equal(s.threads,width<=600?5:9);assert.ok(s.clock>=clock-.05,'Resize reset transport clock');widthResults.push({...dimensions,threads:s.threads});
   }
   check('Five responsive widths, reduced mobile thread count, resize preserves phase',widthResults);
   const end=await page.locator('#scenario').evaluate(el=>el.offsetTop+el.offsetHeight);await scroll(end+700,500);const stopped=await state();assert.equal(stopped.paused,true);await page.waitForTimeout(250);assert.equal((await state()).clock,stopped.clock);check('Transport pauses beyond its intended section scope');
   await scroll(0,1200);assert.equal((await state()).paused,false);
-  await page.locator('.header > nav a[href="evidence.html"]').click();await page.waitForURL('**/evidence.html');await page.goBack();await page.waitForTimeout(1200);assert.equal(await page.locator('.light-field').count(),1);assert.equal(await page.locator('.flow-canvas').count(),1);assert.equal((await state()).threads,12);check('Navigate away/back: one canvas and twelve transport threads');
+  await page.locator('.header > nav a[href="evidence.html"]').click();await page.waitForURL('**/evidence.html');await page.goBack();await page.waitForTimeout(1200);assert.equal(await page.locator('.light-field').count(),1);assert.equal(await page.locator('.flow-canvas').count(),1);assert.equal((await state()).threads,9);check('Navigate away/back: one canvas and nine transport threads');
   await shot('desktop-final');
   // Mobile gets a separate recording at its real viewport size.
   const mobile=await browser.newContext({viewport:{width:390,height:844},recordVideo:{dir:path.join(out,'videos'),size:{width:390,height:844}}});const m=await mobile.newPage();m.on('pageerror',e=>errors.push(e.message));await m.goto(base+'/index.html');await m.waitForTimeout(2200);await m.screenshot({path:path.join(out,'mobile-final.png')});

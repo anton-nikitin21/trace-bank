@@ -10,4 +10,7 @@ function setup(){
  observer=new IntersectionObserver(entries=>{for(const entry of entries){if(entry.isIntersecting)entry.target.classList.add('copy-arrived');else if(entry.intersectionRatio===0)entry.target.classList.remove('copy-arrived');}},{threshold:[0,.15],rootMargin:'0px'});
  text.forEach(el=>{el.classList.add('copy-arrival');el.style.setProperty('--copy-delay',el.tagName==='P'?'100ms':'0ms');observer.observe(el);});
 }
-setup();media.addEventListener('change',setup);
+const intro=document.querySelector('.intro-overlay');
+if(intro) Promise.allSettled(intro.getAnimations().map(animation=>animation.finished)).then(setup);
+else setup();
+media.addEventListener('change',setup);

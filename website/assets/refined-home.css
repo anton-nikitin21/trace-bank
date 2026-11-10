@@ -43,3 +43,15 @@
  .refined-home .chapter-copy p{font-size:.9375rem}
 }
 @media(prefers-reduced-motion:reduce){.refined-home *{animation:none!important;transition:none!important;scroll-behavior:auto!important}.refined-home .rb-enter{opacity:1;translate:0 0}}
+
+/* The main action and supporting links share the existing button system. */
+.refined-home .hero h1{font-size:clamp(2.8rem,5vw,5.25rem)}
+.refined-home .hero-caption{font-size:.875rem}
+.refined-home .header .button-ghost{color:var(--text)}
+@media(max-width:760px){
+ .refined-home .hero h1{font-size:clamp(2.15rem,8vw,3.5rem)}
+ .refined-home .hero-actions .button{justify-content:center}
+}
+@media(max-width:390px){
+ .refined-home .hero-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+}

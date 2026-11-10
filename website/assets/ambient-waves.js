@@ -4,7 +4,7 @@ const main=document.querySelector('.page-home main');
 if(main){
  const canvas=document.createElement('canvas');canvas.className='ambient-waves';canvas.setAttribute('aria-hidden','true');main.prepend(canvas);
  const ctx=canvas.getContext('2d');
- const media=matchMedia('(prefers-reduced-motion: reduce)');
+ const media=matchMedia('(prefers-reduced-motion: reduce), (pointer: coarse)');
  let w=1,h=1,frame=0,last=0,clock=0,dirty=true;
  function size(){w=innerWidth;h=innerHeight;const d=Math.min(devicePixelRatio||1,1.5);canvas.width=w*d;canvas.height=h*d;ctx.setTransform(d,0,0,d,0,0);dirty=true;wake();}
  function stopped(){return media.matches||document.hidden||document.body.classList.contains('motion-paused');}

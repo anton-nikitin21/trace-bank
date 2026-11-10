@@ -27,3 +27,11 @@
 @media(max-width:760px){#trace-workspace .shell-side .trace-wordmark{width:132px;height:37px}#trace-workspace .shell-side>.brand{margin-bottom:12px}#paymentIssuesDialog{padding:20px}}
 
 #trace-workspace .team-footer .trace-wordmark{width:148px;height:41px;overflow:visible}#trace-workspace .team-footer .trace-wordmark img{position:static;width:100%;height:100%;max-width:100%;filter:none;mix-blend-mode:normal;transform:none}#trace-workspace .economics-outcome{margin-top:26px;padding:22px;border:1px solid #8bd8ff44;background:#8bd8ff08;border-radius:10px}#trace-workspace .economics-outcome h3{font-size:19px;margin:0 0 16px}#trace-workspace .economics-outcome summary{padding:12px 0;color:#b4e4ff;line-height:1.7}#trace-workspace .economics-outcome p{font-size:16px;line-height:1.8}
+
+/* File picker and native camera share the document intake step. */
+.upload-actions{display:flex;flex-wrap:wrap;gap:10px;flex:0 1 auto}
+.upload-actions button{min-height:44px}
+#trace-workspace .upload-drop>span{flex:1;min-width:0}
+@media(max-width:600px){
+  .upload-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+}

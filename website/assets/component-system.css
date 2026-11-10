@@ -1,0 +1,171 @@
+/* Shared component treatments. Each screen keeps its existing font and colors. */
+:root {
+  --trace-shadow-card: 0 12px 30px #0003;
+  --trace-shadow-raised: 0 20px 55px #0003;
+  --trace-shadow-action: 0 5px 16px #0003;
+}
+
+:is(.page-home, .page-evidence) .header nav a {
+  border-radius: var(--radius-sm);
+  text-underline-offset: .3em;
+}
+
+.page-home .preview-panel { box-shadow: var(--trace-shadow-raised); }
+.page-home .hero-visual { box-shadow: var(--trace-shadow-raised); }
+.page-home .statement .scenario-row { box-shadow: var(--trace-shadow-card); }
+
+#trace-workspace :is(.box, .queue-table) {
+  border-radius: var(--radius-md);
+  box-shadow: var(--trace-shadow-card);
+}
+#trace-workspace :is(.queue-filters input, .queue-filters select, textarea) {
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+}
+#trace-workspace .queue-filters > label { min-width: 0; }
+#trace-workspace .queue-filters :is(input, select) { box-sizing: border-box; max-width: 100%; }
+
+:is(.page-home, .page-evidence) :is(.header a, .button):focus-visible,
+#trace-workspace :is(button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  :is(.page-home, .page-evidence) .header nav a:hover { text-decoration: none; }
+  :is(.page-home, .page-evidence) .button:hover { box-shadow: var(--trace-shadow-action); }
+  #trace-workspace .queue-metric:not([aria-pressed="true"]):hover { border-color: var(--control-border); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(.page-home, .page-evidence) .button,
+  #trace-workspace :is(.queue-metric, .queue-filters input, .queue-filters select, textarea) {
+    transition: background-color var(--duration-state) var(--ease),
+      border-color var(--duration-state) var(--ease),
+      box-shadow var(--duration-state) var(--ease);
+  }
+}
+
+@media (max-width: 720px) {
+  #trace-workspace .queue-filters { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Rounded navigation outline reveals around the label without moving it. */
+:is(.page-home, .page-evidence) .header nav a::after {
+  inset: 3px -12px;
+  width: auto;
+  height: auto;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  transform: none;
+  opacity: 0;
+  clip-path: circle(0% at 0% 50%);
+  pointer-events: none;
+  transition: clip-path 380ms ease, opacity 180ms ease;
+}
+:is(.page-home, .page-evidence) .header nav a:is(:hover, :focus-visible)::after {
+  transform: none;
+  opacity: 1;
+  clip-path: circle(150% at 0% 50%);
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.page-home, .page-evidence) .header nav a::after { transition: none; }
+}
+/* Fill the pill behind the label on hover and keyboard focus. */
+:is(.page-home, .page-evidence) .header nav a {
+  isolation: isolate;
+}
+:is(.page-home, .page-evidence) .header nav a::after {
+  background: var(--accent);
+  z-index: -1;
+}
+:is(.page-home, .page-evidence) .header nav a:is(:hover, :focus-visible) {
+  color: #081426;
+  text-decoration: none;
+}
+/* Employee workspace surfaces share the landing's blue light and rounded shapes. */
+#trace-workspace {
+  background: radial-gradient(ellipse at 90% 0, #183a584d, transparent 55%), #081322;
+}
+#trace-workspace .shell-side {
+  background: linear-gradient(165deg, #11263c, #081322 65%);
+}
+#trace-workspace .shell-top {
+  background: #0c1d30;
+  border-bottom-color: #9bcfff26;
+}
+#trace-workspace .shell-side nav button {
+  border-radius: 12px;
+}
+#trace-workspace .shell-side nav button.active {
+  background: #8bd8ff;
+  color: #081426;
+  border-color: #8bd8ff;
+}
+#trace-workspace .queue-metric {
+  border-radius: 16px;
+  background: linear-gradient(145deg, #19334c, #0d2035);
+  border-color: #86b8df38;
+}
+#trace-workspace .queue-metric strong { color: #c5eaff; }
+#trace-workspace .queue-metric[aria-pressed=true] {
+  background: linear-gradient(145deg, #254b68, #16324b);
+  border-color: #8bd8ff;
+}
+#trace-workspace .queue-table { background: #0d1e31; }
+#trace-workspace .queue-table th { color: #c2d6ea; }
+#trace-workspace .box {
+  background: linear-gradient(145deg, #132a41, #0d1d30);
+  border-color: #86b8df30;
+}
+@media (hover: hover) {
+  #trace-workspace .queue-table tbody tr:hover { background: #8bd8ff0b; }
+}
+@media (max-width: 600px) {
+  #trace-workspace .queue-table { background: transparent; }
+}
+
+/* Keep labels legible throughout the fill transition. */
+:is(.page-home, .page-evidence) .header nav a::after {
+  clip-path: none;
+  transition: opacity 180ms ease;
+}
+:is(.page-home, .page-evidence) .header nav a:is(:hover, :focus-visible)::after {
+  clip-path: none;
+}
+:is(.page-home, .page-evidence) .site-mobile-menu nav a {
+  padding-inline: 16px;
+}
+:is(.page-home, .page-evidence) .site-mobile-menu nav a::after {
+  inset-inline: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.page-home, .page-evidence) .header nav a::after { transition: none; }
+}
+
+/* Trace keeps its own identity in a blue-and-white palette. */
+:is(.page-home,.page-evidence) .header .button {
+  background:#fff;
+  border-color:#fff;
+  color:#053d92;
+}
+:is(.page-home,.page-evidence) .header .button:hover {
+  background:#dcecff;
+  border-color:#dcecff;
+  color:#063779;
+}
+#trace-workspace .upload-actions .primary {
+  background:#0054c9;
+  border-color:#0054c9;
+  color:#fff;
+}
+#trace-workspace #captureDocument {
+  background:#fff;
+  border-color:#9dbfee;
+  color:#063d91;
+}
+#trace-workspace #captureDocument:hover { background:#e4efff; }
+@media(max-width:850px) {
+  :is(.page-home,.page-evidence) .site-mobile-menu summary { width:44px; height:44px; }
+}

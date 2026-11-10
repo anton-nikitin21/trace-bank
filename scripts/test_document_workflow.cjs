@@ -17,6 +17,11 @@ el('paymentIssuesList').querySelector('.issue-edit-document').onclick();assert.e
 document.querySelector('[data-tab="model"]').onclick();assert.equal(el('model').hidden,false);assert.match(el('paybackReason').textContent.replace(/[\s\u00a0]/g,''),/66000/);el('economicsHelp').onclick();assert.equal(el('economicsExplanation').hidden,false);assert.equal(el('economicsHelp').getAttribute('aria-expanded'),'true');el('economicsHelp').onclick();assert.equal(el('economicsExplanation').hidden,true);el('m-cases').value='120000';await run('calculate()');assert.match(el('modelResult').textContent.replace(/[\s\u00a0]/g,''),/1068000/);assert.match(el('paybackReason').textContent,/возвращаются/);
  document.querySelector('[data-tab="research"]').onclick();assert.equal(el('research').hidden,false);assert.equal(el('hypotheses').children.length,6);
  document.querySelector('[data-tab="case"]').onclick();assert.equal(el('case').hidden,false);
+ assert.equal(el('cameraFile').getAttribute('capture'),'environment');
+ let cameraPickerOpened=false;el('cameraFile').click=()=>{cameraPickerOpened=true;};el('captureDocument').onclick();
+ assert.equal(cameraPickerOpened,true);
+ el('cameraFile').onchange({target:{files:[],value:''}});
+ assert.equal(run('packet.documents.length'),5);
  const uploadText='Тип: УПД\nНомер: УПД-44\nДоговор: Д-44\nИНН контрагента: 7700000004\nДата: 2026-09-20\nСумма: 1000';
  // Real upload entry point and real TXT extraction, no mocked success report.
  el('documentFiles').onchange({target:{files:[new File([uploadText],'new.txt',{type:'text/plain'})],value:''}});

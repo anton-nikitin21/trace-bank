@@ -25,7 +25,7 @@ try{
     await new Promise(resolve=>{function tick(now){times.push(now-previous);previous=now;scrollBy({top:4,behavior:'instant'});if(now-start<2500)requestAnimationFrame(tick);else resolve();}requestAnimationFrame(tick);});obs.disconnect();times.splice(0,2);times.sort((a,b)=>a-b);return {frames:times.length,medianMs:times[Math.floor(times.length*.5)],p95Ms:times[Math.floor(times.length*.95)],longTasks:tasks};
   });
   await page.waitForTimeout(500);const c=await state();assert.ok(c.progress>a.progress);assert.notEqual(c.transform,a.transform);assert.ok(c.clock>b.clock);check('Slow native scroll develops the existing composition, transport clock continues',pacing);
-  await page.locator('#scenario .display').waitFor({state:'visible'});assert.equal(await page.locator('#scenario .display').evaluate(el=>el.classList.contains('is-visible')),true);check('Masked section heading enters through its unmasked observer box');
+  await page.locator('#scenario .display').scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('#scenario .display').classList.contains('is-visible'));check('Masked section heading enters through its unmasked observer box');
   // Cross the section boundary with one field/clock, then change direction rapidly.
   const heroEnd=await page.locator('.hero').evaluate(el=>el.offsetHeight);
   await scroll(heroEnd-70,450);const before=await state();await scroll(heroEnd+90,450);const after=await state();assert.equal(await page.locator('.light-field').count(),1);assert.ok(after.clock>before.clock);assert.ok(after.progress>before.progress);check('Hero/scenario boundary uses one continuous field and animation clock');

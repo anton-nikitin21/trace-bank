@@ -36,7 +36,9 @@
   .upload-actions{display:grid;grid-template-columns:minmax(0,1fr)}
 }
 .ocr-option{display:flex;align-items:baseline;gap:9px;margin-top:14px;color:var(--muted);font-size:14px;line-height:1.5}
-.ocr-option input{flex:0 0 auto;accent-color:#0759c7}
+#trace-workspace .ocr-option{align-items:flex-start;max-width:100%}
+#trace-workspace .ocr-option input[type=checkbox]{flex:0 0 18px;width:18px;height:18px;min-width:18px;min-height:0;margin:2px 0 0;padding:0;accent-color:#0759c7}
+#trace-workspace .ocr-option span{flex:1;min-width:0;overflow-wrap:break-word}
 #recognitionDialog .field-hint{overflow-wrap:anywhere}
 .requirements-box .requirement-group{border-top:1px solid var(--line);padding-block:10px}
 .requirement-group summary{cursor:pointer;min-height:44px;padding-block:10px;font-weight:600;overflow-wrap:anywhere}

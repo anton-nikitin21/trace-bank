@@ -7,7 +7,7 @@ const base=process.env.TRACE_URL||'http://127.0.0.1:8766';
 const out=process.env.TRACE_REPORT_DIR;
 if(!out)throw Error('Set TRACE_REPORT_DIR to an output folder.');
 await fs.mkdir(path.join(out,'videos'),{recursive:true});
-const browser=await chromium.launch({headless:true,channel:'chrome'});
+const browser=await chromium.launch({headless:true,channel:process.env.CHROME_CHANNEL||'chrome'});
 const context=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir:path.join(out,'videos'),size:{width:1440,height:1000}}});
 const page=await context.newPage(),errors=[],checks=[],frames=[];
 page.on('pageerror',error=>errors.push(error.message));

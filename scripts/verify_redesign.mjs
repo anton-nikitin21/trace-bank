@@ -42,9 +42,14 @@ try{
   assert.equal(await logoVideo.getAttribute('playsinline'),'');await shot('connection-scroll');
   await page.locator('#materials').scrollIntoViewIfNeeded();await page.waitForTimeout(1200);await shot('materials-desktop');check('Central scene follows native scroll and all material destinations remain');
   await page.goto(base+'/evidence.html');await sweep();await shot('evidence-desktop');
-  await page.locator('#caseFlow').fill('120000');await page.locator('#caseFlow').dispatchEvent('input');assert.match((await text('#net')).replace(/[\s\u00a0]/g,''),/1068000/);assert.match(await text('#payback'),/2,25/);await page.goto(base+'/evidence.html#economics');await page.waitForTimeout(1200);await shot('economics-desktop');
+  assert.match(await text('#economics'),/Одна финансовая модель/);
+  assert.equal(await page.locator('#economics a[href="analytics.html#economics"]').count(),1);
+  assert.equal(await page.locator('#economics a[href="downloads/financial-model-current-2026-11-11.xlsx"]').count(),1);
+  await page.locator('#economics a[href="analytics.html#economics"]').click();await page.waitForURL('**/analytics.html#economics');
+  await page.locator('#fin-cases').fill('120000');assert.match(await text('#fin-net'),/1,1 млн ₽/);assert.match(await text('#fin-payback'),/27 мес\./);await shot('economics-desktop');
   for(const width of widths){await page.setViewportSize({width,height:1000});await noOverflow('evidence '+width);}
-  check('Evidence calculator, download links and five responsive widths');
+  await page.goto(base+'/analytics.html#sources');await page.waitForTimeout(300);assert.equal(await page.locator('a[href="downloads/product-audit-2026-11-11.docx"]').count(),1);assert.equal(await page.locator('a[href="downloads/trace-analytics-pack-2026-11-11.zip"]').count(),1);
+  check('Evidence routes to single-source financial model; workbook, audit and analytics pack are linked');
   // Real production gate, no fixture interception here.
   await page.setViewportSize({width:1440,height:1000});await page.goto(base+'/workspace.html');await page.locator('#auth-sign-in input').first().waitFor({timeout:30000}).catch(()=>{});
   assert.equal(await page.locator('#trace-workspace').isVisible(),false);assert.equal(await page.locator('#trace-workspace').getAttribute('inert'),'');assert.equal(await page.locator('#auth-gate').isVisible(),true);await shot('auth-desktop');
@@ -61,7 +66,7 @@ try{
   await page.locator('#copyDraft').click();assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),await page.locator('#draft').inputValue());
   await page.locator('#prepareRequest').click();assert.match(await text('#workflowStatus'),/Ожидает уточнения/);
   await page.locator('#reviewDocument').click();await page.locator('#confirmFields').click();assert.equal(await page.locator('#staleNotice').isVisible(),true);assert.equal(await page.locator('#approve').isDisabled(),true);
-  await page.locator('.technical-options summary').click();page.once('dialog',dialog=>dialog.accept());await page.locator('#loadFixed').click();await waitText('#issueCount','0');await waitText('#completion','3 / 3');await page.locator('#reviewComment').fill('Связи, реквизиты и суммы проверены в учебном примере.');await page.locator('#approve').click();await page.waitForFunction(()=>document.getElementById('workflowStatus').textContent==='Проверка завершена');assert.match(await text('#caseTimeline'),/Проверка сотрудником завершена/);await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.waitForTimeout(500);await shot('case-corrected-desktop');
+  await page.locator('.technical-options summary').filter({hasText:'Учебные примеры'}).click();page.once('dialog',dialog=>dialog.accept());await page.locator('#loadFixed').click();await waitText('#issueCount','0');await waitText('#completion','3 / 3');await page.locator('#reviewComment').fill('Связи, реквизиты и суммы проверены в учебном примере.');await page.locator('#approve').click();await page.waitForFunction(()=>document.getElementById('workflowStatus').textContent==='Проверка завершена');assert.match(await text('#caseTimeline'),/Проверка сотрудником завершена/);await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.waitForTimeout(500);await shot('case-corrected-desktop');
   const download=page.waitForEvent('download');await page.locator('#export').click();const file=await download;assert.match(file.suggestedFilename(),/\.json$/);const report=JSON.parse(await fs.readFile(await file.path(),'utf8'));assert.equal(report.issue_count,0);
   check('Queue search/filter; analysis; source dialog; copy; edit; clarification; correction; approval; export');
   await page.reload();await page.locator('#tutorialQueue').click();await page.locator('#queueRows button').first().click();assert.match(await text('#workflowStatus'),/Проверка завершена/);assert.equal(await page.locator('#issueCount').textContent(),'0');check('Local state, result and workflow survive reload');

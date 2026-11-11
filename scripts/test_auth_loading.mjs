@@ -3,7 +3,7 @@ const {chromium}=await import(process.env.PLAYWRIGHT_MODULE||'playwright');
 import assert from 'node:assert/strict';import fs from 'node:fs/promises';
 const base=process.env.TRACE_URL||'http://127.0.0.1:8766';
 const reportDir=process.env.TRACE_REPORT_DIR;
-const browser=await chromium.launch({headless:true,channel:'chrome'});const context=await browser.newContext();
+const browser=await chromium.launch({headless:true,channel:process.env.CHROME_CHANNEL||'chrome'});const context=await browser.newContext();
 await context.route('https://**/npm/**/ui.browser.js',r=>r.fulfill({contentType:'text/javascript',body:'window.__internal_ClerkUICtor = function(){};'}));
 await context.route('https://**/npm/**/clerk.browser.js',r=>r.fulfill({contentType:'text/javascript',body:`window.Clerk={user:null,organization:null,load:async()=>{},addListener:()=>{},mountSignIn(el){window.testMount=()=>{el.innerHTML='<label for="test-email">Почта</label><input id="test-email" type="email">';}},mountSignUp(el){this.mountSignIn(el);}};`}));
 const page=await context.newPage();await page.goto(base+'/workspace.html');await page.waitForFunction(()=>document.querySelector('#auth-gate').classList.contains('auth-loading'));assert.match(await page.locator('#auth-status').textContent(),/Загружаем/);assert.equal(await page.locator('#trace-workspace').isVisible(),false);

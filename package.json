@@ -5,7 +5,7 @@
   "description": "Trace: synthetic bank employee document review demo",
   "scripts": {
     "dev": "python -m http.server 8766 --bind 127.0.0.1 --directory website",
-    "check": "python scripts/check_project.py",
+    "check": "python scripts/check_project.py && python scripts/build_analytics_data.py --check && python scripts/build_analytics_pack.py --check && node scripts/test_analytics.cjs",
     "test": "python -m unittest discover -s app -v",
     "test:browser-engine": "node scripts/test_browser_engine.cjs",
     "build:workspace": "python scripts/build_workspace.py",
@@ -14,7 +14,9 @@
     "test:ui": "node scripts/verify_redesign.mjs",
     "test:auth-loading": "node scripts/test_auth_loading.mjs",
     "test:motion": "node scripts/test_light_flow.mjs",
-    "test:documents": "node scripts/test_document_reader.cjs && node scripts/test_document_workflow.cjs"
+    "test:documents": "node scripts/test_document_reader.cjs && node scripts/test_document_workflow.cjs",
+    "build:analytics": "python scripts/build_analytics_data.py && python scripts/build_analytics_pack.py",
+    "test:analytics": "node scripts/test_analytics.cjs"
   },
   "engines": {
     "node": ">=22"

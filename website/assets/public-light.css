@@ -24,6 +24,12 @@
 :is(.page-home,.page-evidence) .header nav a { color: #304d72; }
 :is(.page-home,.page-evidence) .header nav a:hover { color: var(--accent); }
 :is(.page-home,.page-evidence) :is(.header,.team-footer) .trace-wordmark img {
+  position: static;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
   filter: brightness(0) saturate(100%) invert(20%) sepia(94%) saturate(2905%) hue-rotate(205deg);
   mix-blend-mode: normal;
 }

@@ -1,0 +1,20 @@
+Trace merged release verification — 11.11.2026
+
+PASS Python unit tests: 26/26 (engine, API, Clerk JWT, registry permissions/isolation/versions).
+PASS Synthetic benchmark: 200/200 expected issue-code multisets reproduced by merged engine.
+PASS Document reader and complete document workflow (linkedom installed).
+PASS Browser rules engine and confirmation guards.
+PASS Auth state and organization/sign-out checks (simulated identities).
+PASS Analytics input validation, finance, sensitivity and pilot calculations.
+PASS Full Chromium UI acceptance suite at 360/390/768/1024/1440 px.
+PASS Registry browser flow: draft, unsaved-change guard, approval, history, organization switch, read-only role.
+PASS Delayed sign-in form/loading/retry handling (intercepted SDK in tests).
+PASS Light-flow animations, reduced motion, mobile menu, pause, back navigation.
+PASS Project local links and JavaScript syntax, workspace and preview consistency.
+PASS Analytics JSON copies agree with model; analytics archive content agrees with downloadable files.
+
+See downloads/merged-release-2026-11-11.md and project verification/merged-2026-11-11/.
+
+Limits: production sign-in with a real account and bank integration are not tested. Registry metadata is not connected to the document rules engine. Cases remain browser-local. CustDev source percentages have no attached sample size or primary protocols. The synthetic corpus does not measure bank-document quality. Supplied spreadsheets/PDF are preserved; native Excel recalculation was not tested in this merge.
+
+PASS Upload layout regression: actual PDF extraction and visible result, five widths, unsupported-file feedback.

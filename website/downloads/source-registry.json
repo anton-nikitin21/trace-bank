@@ -1,0 +1,104 @@
+{
+  "checked_on": "2026-11-11",
+  "scope": "Открытые первичные источники и публичные материалы поставщиков. Банковские интервью, закрытые агрегаты и банковский корпус не получены.",
+  "sources": [
+    {
+      "id": "CBR-BANKING-SECTOR",
+      "url": "https://www.cbr.ru/banking_sector/",
+      "publisher": "Банк России",
+      "title": "Банковский сектор Российской Федерации",
+      "access": "full_page_or_official_material",
+      "supports": "300 действующих банков: 210 с универсальной и 90 с базовой лицензией на 01.10.2026.",
+      "does_not_support": "Отраслевой контекст; не число потенциальных покупателей Trace.",
+      "last_verified": "2026-11-10",
+      "verified_on": "2026-11-11"
+    },
+    {
+      "id": "ITFB-EASYDOC",
+      "url": "https://www.itfbgroup.ru/easydoc",
+      "publisher": "ITFB Group",
+      "title": "ITFB EasyDoc 4.0",
+      "access": "full_page_or_official_material",
+      "supports": "Публичное описание OCR/IDP/LLM, классификации, извлечения, верификации и экспорта.",
+      "does_not_support": "Заявления поставщика; не независимый тест и не подтверждение полного совпадения с процессом Trace.",
+      "last_verified": "2026-11-10",
+      "verified_on": "2026-11-11"
+    },
+    {
+      "id": "ITFB-VTB-CASE",
+      "url": "https://itfbgroup.ru/projects/sozdanie_sistemy_avtomatizirovannoj_obrabotki_dokumentov",
+      "publisher": "ITFB Group",
+      "title": "Кейс ВТБ: автоматизированная обработка пакетов документов",
+      "access": "full_page_or_official_material",
+      "supports": "Разработка с участием специалистов ВТБ; классификация и извлечение данных; развёртывание на серверах банка.",
+      "does_not_support": "Публичное описание кейса не раскрывает текущее состояние, масштаб использования и весь процесс запроса документов.",
+      "last_verified": "2026-11-10",
+      "verified_on": "2026-11-11"
+    },
+    {
+      "id": "DIRECTUM-ARIO-1.3",
+      "url": "https://www.directum.ru/download/ario_1.3_user_manual.pdf",
+      "publisher": "Directum",
+      "title": "Руководство пользователя Directum Ario One 1.3",
+      "access": "full_page_or_official_material",
+      "supports": "Захват входящих документов, разбиение на комплекты, распознавание, классификация, извлечение фактов и передача в целевую систему.",
+      "does_not_support": "Функции относятся к документированной версии руководства; состав конкретной актуальной поставки нужно подтверждать у поставщика.",
+      "last_verified": "2026-11-10",
+      "verified_on": "2026-11-11"
+    },
+    {
+      "id": "CONTENTAI-CAPTURE",
+      "url": "https://contentai.ru/contentcapture",
+      "publisher": "Content AI",
+      "title": "ContentCapture",
+      "access": "full_page_or_official_material",
+      "supports": "Импорт, классификация, распознавание, извлечение, проверка, действия и экспорт; контур заказчика.",
+      "does_not_support": "Функции указаны поставщиком; нужно уточнить состав лицензии и конкретную интеграцию.",
+      "last_verified": "2026-11-10",
+      "verified_on": "2026-11-11"
+    },
+    {
+      "id": "CONTENTAI-BANK",
+      "url": "https://contentai.ru/contentcapture-bank",
+      "publisher": "Content AI",
+      "title": "ContentCapture Банк",
+      "access": "full_page_or_official_material",
+      "supports": "Распознавание платёжных документов, верификация и экспорт данных в банковскую систему.",
+      "does_not_support": "Публичный сценарий посвящён вводу платёжных документов; не доказывает полное совпадение с задачей Trace.",
+      "last_verified": "2026-11-10",
+      "verified_on": "2026-11-11"
+    },
+    {
+      "id": "SMARTENGINES-SDE36",
+      "url": "https://smartengines.ru/news/bezoblachnaya-pogoda-na-sklade-smart-document-engine-3-6-raspoznaet-pervichnye-dokumenty-bez-interneta-i-infrastrukturnoj-zavisimosti/",
+      "publisher": "Smart Engines",
+      "title": "Smart Document Engine 3.6: локальное распознавание первичных документов",
+      "access": "full_page_or_official_material",
+      "supports": "Поставщик сообщил 19.10.2026 о локальном распознавании первичных документов и табличных значений на устройстве или сервере.",
+      "does_not_support": "Поставщик не публикует независимую сравнительную точность на банковском корпусе Trace.",
+      "last_verified": "2026-11-10",
+      "verified_on": "2026-11-11"
+    },
+    {
+      "id": "ONEC-SVERKA",
+      "url": "https://v8.1c.ru/its/services/1c-sverka/",
+      "publisher": "1С",
+      "title": "1С:Сверка 2.0",
+      "access": "full_page_or_official_material",
+      "supports": "Сверка счетов-фактур, УПД/УКД, актов, накладных и банковских документов; переход к исходному документу.",
+      "does_not_support": "Официальное описание сервиса не доказывает обработку конкретного банковского запроса.",
+      "last_verified": "2026-11-10",
+      "verified_on": "2026-11-11"
+    },
+    {
+      "id": "NIST-BINOMIAL",
+      "url": "https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/exacbino.htm",
+      "publisher": "NIST",
+      "title": "Exact Binomial Confidence Limits",
+      "access": "full_page_or_official_material",
+      "supports": "Метод точных биномиальных доверительных границ.",
+      "does_not_support": "Статистическая формула не заменяет дизайн независимой выборки.",
+      "last_verified": "2026-11-10"
+    }
+  ]
+}

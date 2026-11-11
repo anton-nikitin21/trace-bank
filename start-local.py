@@ -3,6 +3,10 @@ from pathlib import Path
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from functools import partial
 import webbrowser
+import sys
+import subprocess
+if '--server' in sys.argv:
+    raise SystemExit(subprocess.call([sys.executable, str(Path(__file__).resolve().parent / 'app/storage_server.py')]))
 root = Path(__file__).resolve().parent / 'website'
 server = ThreadingHTTPServer(('127.0.0.1', 0), partial(SimpleHTTPRequestHandler, directory=str(root)))
 url = 'http://127.0.0.1:%d/demo.html' % server.server_port

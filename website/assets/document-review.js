@@ -125,6 +125,9 @@
         loaded?`Прочитано файлов: ${loaded}. Проверьте поля перед анализом.`:'',
         ...failures
       ].filter(Boolean).join(' '));
+      if(loaded && $('recognitionList').firstElementChild){
+        go('recognitionList');
+      }
     }catch(error){showUploadMessage(error.message);}finally{await D.stop().catch(()=>{});controller=null;setBusy(false);renderRecognitions();}
   }
   function getFormFields(){const fields={};for(const k of Object.keys(D.FIELD_LABELS))fields[k]=$('field-'+k).value.trim();return fields;}

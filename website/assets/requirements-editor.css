@@ -1,0 +1,13 @@
+#requirements .req-notice { margin-bottom: 24px; }
+#requirements .req-layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+#requirements fieldset { border: 0; padding: 0; margin: 20px 0 0; min-width: 0; display: grid; gap: 18px; }
+#requirements label { display: grid; gap: 8px; font-size: 14px; }
+#requirements input:not([type=checkbox]), #requirements textarea, #req-select { width: 100%; min-height: 44px; box-sizing: border-box; }
+#requirements .req-checkbox { display: flex; align-items: center; min-height: 44px; }
+#requirements .req-checkbox input { width: 20px; height: 20px; }
+#requirements button { min-height: 44px; white-space: normal; }
+#requirements fieldset:disabled { opacity: .65; }
+#req-status { min-height: 1.5em; margin-top: 16px; }
+#req-history { padding-left: 22px; overflow-wrap: anywhere; }
+#req-history li { margin-bottom: 16px; line-height: 1.6; }
+@media (max-width: 800px) { #requirements .req-layout { grid-template-columns: minmax(0, 1fr); } }

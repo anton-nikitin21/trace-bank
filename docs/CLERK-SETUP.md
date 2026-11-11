@@ -43,3 +43,18 @@ node scripts/test_browser_engine.cjs
 Для закрытого банковского контура нужен адаптер корпоративного SSO/OIDC. Не загружайте реальные клиентские документы в текущую публичную версию.
 
 Официальная инструкция SDK: https://clerk.com/docs/js-frontend/getting-started/quickstart
+
+## Название Trace на экране Google
+
+Текст «Переход в приложение Clerk» задаётся названием Google OAuth-приложения. В текущем тестовом экземпляре используются общие реквизиты Clerk. Переименование заголовка сайта или приложения в Clerk не переименовывает общее приложение Google.
+
+Владелец настройки должен:
+
+1. В Google Cloud выбрать свой проект и в Google Auth Platform → Branding задать App name: `Trace`.
+2. Создать или использовать OAuth client типа Web application. Добавить адрес сайта в Authorized JavaScript origins, а точный Authorized Redirect URI взять из подключения Google в Clerk Dashboard.
+3. В Clerk Dashboard → SSO connections → Google включить Use custom credentials и сохранить Client ID/Client Secret своего Google-приложения.
+4. Проверить вход новым сеансом. Для публичного использования отдельно проверить статус публикации Google OAuth-приложения и требования Google к брендингу.
+
+Секрет хранится в настройках сервиса и не должен попадать в website/assets/auth-config.js. Потребуется доступ к аккаунтам владельца. В рамках локального исправления 11.11.2026 эта внешняя настройка не изменена.
+
+Официальная инструкция: https://clerk.com/docs/guides/configure/auth-strategies/social-connections/google

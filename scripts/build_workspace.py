@@ -26,7 +26,7 @@ for asset in ('auth-config.js','clerk-ru.js','auth.js','auth.css'):
     version=hashlib.sha256((root/'website/assets'/asset).read_text(encoding='utf-8').encode('utf-8')).hexdigest()[:12]
     source=source.replace(f'assets/{asset}"',f'assets/{asset}?v={version}"')
 source=re.sub(r'<script>if\(document\.modelContext\?\.registerTool\).*?</script>','',source,flags=re.S)
-for asset in ('queue.js','document-reader.js','document-review.js'):
+for asset in ('queue.js','document-reader.js','document-review.js','requirements-editor.js'):
     version=hashlib.sha256((root/'website/assets'/asset).read_text(encoding='utf-8').encode('utf-8')).hexdigest()[:12]
     pattern=rf'assets/{re.escape(asset)}(?:\?v=[^\"]*)?\"'
     source=re.sub(pattern,f'assets/{asset}?v={version}\"',source)
